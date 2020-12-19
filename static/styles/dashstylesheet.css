@@ -1,0 +1,59 @@
+html, body {
+  height: 83vh;
+}
+
+div#header {
+  background-image: url(../images/1.jpg);
+  width: 105%;
+  max-width: 1920px;
+  min-width: 550px;
+  height: 150px;
+  margin-left: -8px;
+  margin-top: -8px;
+  overflow: hidden;
+  text-align: center;
+}
+
+div > h1 {
+  margin-top:2%;
+  font-size: 48px;
+  color: white;
+}
+
+#container {
+  height: 100%;
+  min-width: 900px;
+  width: 100%;
+  padding: 0px 3px 0px 3px;
+}
+
+div#container > div {
+  float: left;
+}
+
+div#nav {
+  width: 17%;
+  height: 100%;
+  background-color: #e6e6e6;
+}
+
+div#info {
+  width: 81%;
+  height: 100%;
+  margin-left: 8px;
+  padding-left: 10px;
+  font-size: 19px;
+  overflow-y: auto;
+}
+
+div a {
+  display: block;
+  font-size: 20px;
+  padding: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-top: 3px;
+  background-color: #a6a6a6;
+  font-weight: 520;
+  border-radius: 6px;
+}

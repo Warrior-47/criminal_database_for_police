@@ -1,0 +1,237 @@
+insert into users values
+	('Kamal_Hasan','Kamal Hasan','8123456789','M','test1','01711580620','kamal_hasan@gmail.com','kamal.hasan@police.gov.bd','1'),
+	('aurit_roy','Aurit_Roy','8223456789','M','test2','01971580622','aurit_roy@gmail.com','aurit.roy@police.gov.bd','0'),
+	('rahim_iqbal','Rahim Iqbal','8323456789','M','test3','01711523621','rahim_iqbal@gmail.com','rahim.iqbal@police.gov.bd','0'),
+	('rakib_khandokar','Rakib Khandokar','8023456789','M','test4','01911581621','rakib_khandokar@gmail.com','rakib.khandokar@police.gov.bd','1'),
+	('sakib_hasan','Sakib Hasan','8423456789','M','test5','01911582620','sakib_hasan@gmail.com','sakib.hasan@police.gov.bd','0'),
+	('nil_roy','Nil Roy','8523456789','M','test6','01711590631','nil_roy@gmail.com','nil.roy@police.gov.bd','0'),
+	('shaoummo_sarkar','Shaoummo Sarkar','8623456789','M','test7','01711524623','shaoummo18_smith@gmail.com','shaommo.sarkar@police.gov.bd','0'),
+	('nilima_akter','Nilima Akter','8723456789','F','test8','01711550670','nilima2_akter@gmail.com','nilima.akter@police.gov.bd','0'),
+	('mukib_hasan','Mukib Hasan','8823456789','M','test9','01911588623','mukib_hasan@gmail.com','mukib.hasan@police.gov.bd','0'),
+	('anisha_drishty','Anisha Drishty','8923456789','F','test10','01971532621','anisha_drishty@gmail.com','anisha.drishty@police.gov.bd','0'),
+	('shahrin_zannat','Shahrin Zannat','8913456789','F','test11','01971432521','sharhin_zannat@gmail.com','shahrin.zannat@police.gov.bd','0'),
+	('tanvir_rahman','Tanvir Rahman','8933456789','M','test12','01971502601','tanvir_akter@gmail.com','tanvir.akter@police.gov.bd','0'),
+	('zannat_brishty','Zannat Brishty','8943456789','F','test13','01711532621','zannat_brishty@gmail.com','zannat.brishty@police.gov.bd','0');
+
+
+
+insert into Police_officers(Username, Officer_id,Station,Rank) values
+	('aurit_roy','O_1','Ramna','Inspector General'),
+	('rahim_iqbal','O_2','Ramna','Additional Inspector General'),
+	('rakib_khandokar','O_3','Tejgoan','Deputy Inspector General'),
+	('sakib_hasan','O_4','Tejgoan','Deputy Inspector General'),
+	('nil_roy','O_5','Mirpur','Superintendent'),
+	('shaoummo_sarkar','O_6','Mirpur','Additional Superintendent'),
+	('nilima_akter','O_7','Badda','Inspector'),
+	('mukib_hasan','O_8','Badda','Sub Inspector'),
+	('anisha_drishty','O_9','Gulshan','Sergeant'),
+	('shahrin_zannat','O_10','Gulshan','Constable'),
+	('tanvir_rahman','O_11','Banani','Constable'),
+	('zannat_brishty','O_12','Banani','Constable');
+
+insert into Criminal(Name, Age,Nationality,NID_No,Motive,Phone_No,Address) values
+	('Sourov Roy',20,'Bangladeshi','9123456789','robbery for expensive gadget','01913421016','Rupnagar Slum, Mirpur 11'),
+	('Arman Hasan',30,'Bangladeshi','9223456789','domestic violence','01753487987','House no 22/A, 3rd Floor, Mirpur 11'),
+	('Mokbul Talukdar',50,'Bangladeshi','9323456789','regarding local power','01706585882','Shonapur Village, Barisal'),
+	('Sourov Sarkar',35,'Bangladeshi','9423456789','murder wife for marital affair','01913421234','House no 23, Bolck C, Uttara'),
+	('Anupam Roy',25,'Bangladeshi','9523456789','gaining money by drug trafficking','01711342101','House no 23/A, North Badda'),
+	('Rubel Hassan',33,'Bangladeshi','9623456789','involved in match fixing','01711343241','House no 23/A,Mirpur 10, Dhaka'),
+	('Kashem Khan',37,'Bangladeshi','9723456789','misuse the power of a goverment officer','01911302101','House no 10/A, Tejkunipara, Tejgoan, Dhaka-1215'),
+	('Anupam Sarkar',25,'Bangladeshi','9823456789','stealing money but reason was unknown','01711442100','Baganbari Slum, North Badda'),
+	('Rahim Hawlader',37,'Bangladeshi','9923456789','for taking the advantage of insurance money','01911342100','House no 12/B, Bashundhara Area, Dhaka'),
+	('Rahima Akter', 35,'Bangladeshi','9023456789','involve in bank robbery','01711442111','House no 12, Block D, Mira Road, Rajshahi'),
+	('Rahim Hassan', 35,'Bangladeshi','9013456789','involve in human trafficking','01711442110','House no 12, Block D, Jashim Uddin Road, Rajshahi'),
+	('Jubin Mawla', 35,'Bangladeshi','9043456789','involve in rape','01711992111','House no 34, Block D, Miya Bari Road, Dhaka');
+
+
+
+insert into Crime (Crime_date,End_date,Address) values
+	('2010-01-23','2010-06-25','Hatirjheel Area'),
+	('2001-01-23','2003-01-25','House no 22/A, 3rd Floor, Mirpur 11'),
+	('2005-01-03','2006-01-25','Manik Miya\'s teal stall,Shonapur Village, Barisal'),
+	('2007-01-03','2008-01-25','House no 23, Bolck C, Uttara'),
+	('2007-02-05','2008-11-26',' Underground of house no 23/A North Badda'),
+	('2009-02-10','2012-11-26','Main Gulshan Avenue, Plot-01 Rd 45, Dhaka 1212'),
+	('2007-02-15','2015-11-26','28, Sahid Tajuddin Ahmed Sarani, Tejgaon, Dhaka 1208'),
+	('2007-02-15','2010-11-26','Baganbari Slum, North Badda'),
+	('2010-02-17','2012-11-26','MetLife Building, 18-20 Motijheel, C/A Dilkusha Rd, Dhaka 1000'),
+	('2010-02-17','2019-11-26','269 Dainik Barta Complex (2nd Floor), Alupotty Natore Rd, Rajshahi 6100'),
+	('2010-03-19','2019-11-21',' Underground of house no 12, Block D, Jashim Uddin Road, Rajshahi'),
+	('2010-06-19','2013-11-21','House no 34, Block D, Miya Bari Road, Dhaka');
+
+
+insert into Crime_evidence values
+	(1,'Found a bloody knife at the spot, the victim was injured and was sent to Delta Specialized Hospital for treatment','2010-01-23','Hatirjheel Area'),
+	(2,'Found marks on the body of victim that she was beaten brutally ,was sent to Holy Family for treatment by neighbour','2001-01-24','House no 22/A, 3rd Floor, Mirpur 11'),
+	(3,'Found  bamboo, sticks that was used to attack the people and local office was destroyed very badly','2010-01-23','Manik Miya\'s teal stall,Shonapur Village, Barisal'),
+	(4,'Found  bloody knife and body of a lady , her head and other parts of the body were bandly injured ','2007-01-04','House no 23, Bolck C, Uttara'),
+	(5,'Found  a underground with lots drugs including cannabis, cocaine, heroin and methamphetamine.','2007-02-06','Underground of house no 23/A North Badda'),
+	(6,'Found a audio clip and gathered a video recording which was captured by the cctv footage of the hotel ','2010-01-10','Main Gulshan Avenue, Plot-01 Rd 45, Dhaka 1212'),
+	(7,'Gathered a video recording which was captured by the cctv footage of the office  and other documents ','2009-02-15','28, Sahid Tajuddin Ahmed Sarani, Tejgaon, Dhaka 1208'),
+    (8,'the room was completely destroyed and the furniture were not in it\'s places and gather some hair that may belong to the criminal','2007-02-15','Baganbari Slum, North Badda'),
+    (9,'Found some false document that was used to get money from the insurance company ','2012-04-20','House no 12/B, Bashundhara Area, Dhaka'),
+    (10,'Gathered a video recording which was captured by the cctv footage of the bank ','2010-02-18','269 Dainik Barta Complex (2nd Floor), Alupotty Natore Rd, Rajshahi 6100'),
+    (11,'Found child and female that were kept in the underground othe building and a car that was used for this purpose.','2019-03-25','Underground of house no 12, Block D, Jashim Uddin Road, Rajshahi'),
+    (12,'Found a lady who was injured very badly and glasses, alchohol which proved that the criminals were drunk.','2010-06-20','House no 34, Block D, Miya Bari Road, Dhaka');
+
+
+insert into Murder values
+	(4,'First Degree Murder');
+
+
+insert into Fraud values
+	(10, 1000000000);
+
+insert into Drug_trafficking values
+	(5);
+
+insert into Drugs values
+	(5,'cannabis'),
+	(5,'cocaine'),
+	(5,'methamphatamine');
+
+insert into Human_trafficking values
+	(11, 'Saudi Arabia');
+
+insert into Rape values
+	(12);
+
+insert into Criminal_Remarks VALUES
+	(1,'He has a birthmark on the rightside of his back'),
+	(2,'He Has a surgery mark on his left hand'),
+	(3,'He has an extra finger on his left hand'),
+	(4,'He has a birthmark on his cheek'),
+	(5,'He has a mole on his left toe'),
+	(7,'His left hand was injured and had a surgery mark'),
+	(9,'There is three fingers in his right hand'),
+	(10,'She has blue eyes'),
+	(11,'He is left hander person'),
+	(12,'He has a mole on the right side of his shoulder');
+
+
+insert into Medical_History VALUES
+	(1,'Sourov Roy','Ronit Roy','D_1'),
+	(2,'Arman Hasan','Karim Mahmud','D_2'),
+	(3,'Mokbul Talukdar','Ronit Roy','D_1'),
+	(4,'Sourov Sarkar','Karim Mahmud','D_2'),
+	(5,'Anupam Roy','Karim Iqbal','D_3'),
+	(6,'Rubel Hassan','Sakib Chisty','D_4'),
+	(7,'Kashem Khan','Sakib Chisty','D_4'),
+	(8,'Anupam Sarkar','Ronit Roy','D_1'),
+	(9,'Rahim Hawlader','Ronit Roy','D_1'),
+	(10,'Rahima Akter','Sakib Chisty','D_4'),
+	(11,'Rahim Hassan','Karim Mahmud','D_2'),
+	(12,'Jubin Mawla','Karim Iqbal','D_3');
+
+
+insert into Criminal_diseases values
+	(1,'Sourov Roy','Asthma'),
+	(2,'Arman Hasan','Kidney infection'),
+	(3,'Mokbul Talukdar','Septicemia'),
+	(4,'Sourov Sarkar','Urinary tract infections'),
+	(5,'Anupam Roy','Migraine'),
+	(6,'Rubel Hassan','Breathing problems'),
+	(7,'Kashem Khan','Asthma'),
+	(8,'Anupam Sarkar','Hepatitis b'),
+	(9,'Rahim Hawlader','Migraine'),
+	(10,'Rahima Akter','Gallstones'),
+	(11,'Rahim Hassan','Blood infection'),
+	(12,'Jubin Mawla','Asthma');
+
+
+insert into Criminal_disability values
+	(7,'Kashem Khan','broken hand'),
+	(9,'Rahim Hawlader','three fingers in his right hand');
+
+
+insert into Caught_by values
+	('O_1',1,'2010-01-23','2010-06-26'),
+	('O_2',1,'2010-01-23','2010-06-25'),
+	('O_3',2,'2001-01-23','2003-01-25'),
+	('O_5',2,'2001-01-23','2003-01-25'),
+	('O_4',3,'2005-01-03','2006-01-25'),
+	('O_5',4,'2007-01-03','2008-01-25'),
+	('O_6',5,'2007-02-05','2008-11-26'),
+	('O_7',6,'2009-02-10','2012-11-26'),
+    ('O_8',8,'2007-02-15','2010-11-26'),
+    ('O_9',7,'2007-02-15','2015-11-26'),
+    ('O_10',9,'2010-02-17','2012-11-26'),
+    ('O_11',12,'2010-06-19','2013-11-21'),
+    ('O_12',10,'2010-02-17','2019-11-26'),
+    ('O_12',11,'2010-03-19','2019-11-21');
+
+
+insert into Investigate_by values
+	('O_1',1),
+	('O_3',1),
+	('O_2',2),
+	('O_5',2),
+	('O_4',3),
+	('O_5',4),
+	('O_6',5),
+	('O_7',5),
+	('O_7',6),
+	('O_8',6),
+    ('O_8',7),
+    ('O_9',8),
+    ('O_10',9),
+    ('O_11',12),
+    ('O_12',10),
+    ('O_12',11);
+
+insert into Committed_by values
+	(1,1),
+	(2,2),
+	(3,3),
+	(4,4),
+	(5,5),
+	(6,6),
+	(7,7),
+	(8,8),
+	(9,9),
+	(10,10),
+	(11,11),
+	(12,12);
+
+insert into Victim values
+	(1,'Mr. Kabir',30,'01971145068','House no 98, Bolck D, Gulshan'),
+	(2,'Mrs Sakira Mamun', 27,'01971145058','House no 22/A, 3rd Floor, Mirpur 11'),
+	(4,'Mrs Mayesha Karim', 30,'01971145968','House no 23, Bolck C, Uttara'),
+	(8,'Mr Hasan Mahmud',40,'01971145066','Baganbari Slum, North Badda'),
+	(12,'Ms Riya Choudhury',25,'01971141068','House no 87, Block E, Bashundhara');
+
+
+insert into Victimized values
+	(1,'Mr. Kabir'),
+	(2,'Mrs Sakira Mamun'),
+	(4,'Mrs Mayesha Karim'),
+	(8,'Mr Hasan Mahmud'),
+	(12,'Ms Riya Choudhury');
+
+
+insert into Witness values
+	(1,'Mr Mamun Talukder',50,'01971112332','House no 69, Bolck A, Dhanmondi'),
+	(2,'Mrs Rahima Hamid', 45,'01711456730', 'House no 23/A, 3rd Floor, Mirpur 11'),
+	(4,'Ms Parven Akter',23,'01544321023','House no 24, Bolck C, Uttara'),
+	(5,'Mr Sajib Biswas', 40,'01921345678','House no 23/A, North Badda'),
+	(6,'Mr Jabayer Majumder',39,'01721006005','House no 123/A ,Shahid Tajuddin Raod,Dhaka'),
+	(7,'Mr Atik Baruya',45,'01711006334','221, East Kathal Bagan, Dhaka'),
+	(8, 'Mrs Meherunnnisa', 47,'01711589963','Baganbari Slum, North Badda'),
+	(9,'Mrs Pavel Sarkar',38,'01552456321','12/A, East Manipuripara,Mirpur'),
+	(10,'Mr Habibur Rahman',40,'01557789331','223/D, East Tejturipara, Tejgoan'),
+	(11,'Mrs Anindita Kamal',36,'01711370624','House no 12, Block D, Jashim Uddin Road, Rajshahi'),
+	(12,'Mrs Riya Mahmud',27,'01711582369','House no 35, Block D, Miya Bari Road, Dhaka');
+
+insert into Witnessed values
+
+	(1,'Mr Mamun Talukder'),
+	(2,'Mrs Rahima Hamid'),
+	(4,'Ms Parven Akter'),
+	(5,'Mr Sajib Biswas'),
+	(6,'Mr Jabayer Majumder'),
+	(7,'Mr Atik Baruya'),
+	(8, 'Mrs Meherunnnisa'),
+	(9,'Mrs Pavel Sarkar'),
+	(10,'Mr Habibur Rahman'),
+	(11,'Mrs Anindita Kamal'),
+	(12,'Mrs Riya Mahmud');

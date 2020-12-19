@@ -1,0 +1,216 @@
+CREATE DATABASE Criminal_Database;
+
+CREATE TABLE Users(
+    Username VARCHAR(128) UNIQUE NOT NULL,
+    Name VARCHAR(128) NOT NULL,
+    NID_No CHAR(10) UNIQUE,
+    Gender CHAR(1) NOT NULL,
+    pass CHAR(64) NOT NULL,
+    Phone_No CHAR(11),
+    Personal_email VARCHAR(128) UNIQUE NOT NULL,
+    Department_email VARCHAR(128) UNIQUE NOT NULL,
+    privilege TINYINT(1) NOT NULL,
+
+    PRIMARY KEY(Username)
+);
+
+CREATE TABLE Police_officers (
+    Username VARCHAR(128) UNIQUE NOT NULL,
+    Officer_id CHAR(8) UNIQUE NOT NULL,
+    Station VARCHAR(32),
+    Rank VARCHAR(32),
+    Supervisor_id VARCHAR(128),
+
+    PRIMARY KEY(Officer_id),
+    FOREIGN KEY(Supervisor_id) REFERENCES Police_officers(Officer_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY(Username) REFERENCES Users(Username) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Criminal(
+    Criminal_id INT UNIQUE AUTO_INCREMENT NOT NULL,
+    Name VARCHAR(128) NOT NULL,
+    Age INT NOT NULL,
+    Nationality VARCHAR(32),
+    NID_No CHAR(10) UNIQUE,
+    Photo VARCHAR(256),
+    Motive VARCHAR(64),
+    Phone_No CHAR(11),
+    Address VARCHAR(128),
+
+    PRIMARY KEY(Criminal_id)
+);
+
+CREATE TABLE Crime(
+    Case_No INT UNIQUE AUTO_INCREMENT NOT NULL,
+    Crime_date DATE,
+    End_date DATE,
+    Address VARCHAR(128),
+
+    PRIMARY KEY(Case_No)
+);
+
+CREATE TABLE Crime_evidence(
+    Case_No INT NOT NULL,
+    Description VARCHAR(128),
+    Collection_date DATE,
+    location VARCHAR(128),
+
+    PRIMARY KEY(Case_No),
+    FOREIGN KEY(Case_No) REFERENCES Crime(Case_No) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Murder(
+    Case_No INT NOT NULL,
+    Murder_type VARCHAR(32),
+
+    PRIMARY KEY(Case_No),
+    FOREIGN KEY(Case_No) REFERENCES Crime(Case_No) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Fraud(
+    Case_No INT NOT NULL,
+    Amount INT,
+
+    PRIMARY KEY(Case_No),
+    FOREIGN KEY(Case_No) REFERENCES Crime(Case_No) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Drug_trafficking(
+    Case_No INT NOT NULL,
+
+    PRIMARY KEY(Case_No),
+    FOREIGN KEY(Case_No) REFERENCES Crime(Case_No) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Drugs(
+    Case_No INT NOT NULL,
+    Drug VARCHAR(32),
+
+    PRIMARY KEY(Case_No, Drug),
+    FOREIGN KEY(Case_No) REFERENCES Drug_trafficking(Case_No) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Human_trafficking(
+    Case_No INT NOT NULL,
+    Destination VARCHAR(64),
+
+    PRIMARY KEY(Case_No),
+    FOREIGN KEY(Case_No) REFERENCES Crime(Case_No) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Rape(
+    Case_No INT NOT NULL,
+
+    PRIMARY KEY(Case_No),
+    FOREIGN KEY(Case_No) REFERENCES Crime(Case_No) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Criminal_Remarks(
+    Criminal_id INT NOT NULL,
+    Remark VARCHAR(64) NOT NULL,
+
+    PRIMARY KEY(Criminal_id, Remark),
+    FOREIGN KEY(Criminal_id) REFERENCES Criminal(Criminal_id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Medical_History(
+    Criminal_id INT NOT NULL,
+    Criminal_name VARCHAR(128) NOT NULL,
+    Doctor_name VARCHAR(128) NOT NULL,
+    Doctor_No CHAR(11),
+
+    PRIMARY KEY(Criminal_id,Criminal_name),
+    INDEX(Criminal_name),
+    FOREIGN KEY(Criminal_id) REFERENCES Criminal(Criminal_id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Criminal_diseases(
+    Criminal_id INT NOT NULL,
+    Criminal_name VARCHAR(128) NOT NULL,
+    Disease VARCHAR(32) NOT NULL,
+
+    PRIMARY KEY(Criminal_id,Criminal_name,Disease),
+    FOREIGN KEY(Criminal_id) REFERENCES Medical_History(Criminal_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY(Criminal_name) REFERENCES Medical_History(Criminal_name) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Criminal_disability(
+    Criminal_id INT NOT NULL,
+    Criminal_name VARCHAR(128) NOT NULL,
+    Disability VARCHAR(64) NOT NULL,
+
+    PRIMARY KEY(Criminal_id,Criminal_name,Disability),
+    FOREIGN KEY(Criminal_id) REFERENCES Medical_History(Criminal_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY(Criminal_name) REFERENCES Medical_History(Criminal_name) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Caught_by(
+    Officer_id CHAR(8) NOT NULL,
+    Criminal_id INT NOT NULL,
+    Start_date DATE,
+    End_date DATE,
+
+    PRIMARY KEY(Officer_id,Criminal_id),
+    FOREIGN KEY(Officer_id) REFERENCES Police_officers(Officer_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY(Criminal_id) REFERENCES Criminal(Criminal_id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Investigate_by(
+    Officer_id CHAR(8) NOT NULL,
+    Case_No INT NOT NULL,
+
+    PRIMARY KEY(Officer_id, Case_No),
+    FOREIGN KEY(Officer_id) REFERENCES Police_officers(Officer_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY(Case_No) REFERENCES Crime(Case_No) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Committed_by(
+    Criminal_id INT NOT NULL,
+    Case_No INT NOT NULL,
+
+    PRIMARY KEY(Criminal_id, Case_No),
+    FOREIGN KEY(Criminal_id) REFERENCES Criminal(Criminal_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY(Case_No) REFERENCES Crime(Case_No) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Victim(
+    Case_No INT NOT NULL,
+    Name VARCHAR(128) NOT NULL,
+    Age INT NOT NULL,
+    Phone_No CHAR(11),
+    Address VARCHAR(128),
+
+    PRIMARY KEY(Case_No, Name),
+    INDEX(Name),
+    FOREIGN KEY(Case_No) REFERENCES Crime(Case_No) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Witness(
+    Case_No INT NOT NULL,
+    Name VARCHAR(128) NOT NULL,
+    Age INT NOT NULL,
+    Phone_No CHAR(11),
+    Address VARCHAR(128),
+
+    PRIMARY KEY(Case_No, Name),
+    INDEX(Name),
+    FOREIGN KEY(Case_No) REFERENCES Crime(Case_No) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Witnessed(
+    Case_No INT NOT NULL,
+    Name VARCHAR(128) NOT NULL,
+
+    PRIMARY KEY(Case_No, Name),
+    FOREIGN KEY(Case_No) REFERENCES Crime(Case_No) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY(Name) REFERENCES Witness(Name) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE Victimized(
+    Case_No INT NOT NULL,
+    Name VARCHAR(128) NOT NULL,
+
+    PRIMARY KEY(Case_No, Name),
+    FOREIGN KEY(Case_No) REFERENCES Crime(Case_No) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY(Name) REFERENCES Victim(Name) ON UPDATE CASCADE ON DELETE CASCADE
+);

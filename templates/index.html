@@ -1,0 +1,33 @@
+{% from 'form_helper.html' import displayField %}
+
+{% extends "prelogin-layout.html" %}
+
+{% block metadata %}
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Login Page</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/default.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/stylesheet.css') }}">
+{% endblock %}
+
+{% block content %}
+	<div id = header>
+			<h1>POLICE DEPARTMENT</h1>
+	</div>
+	<div id=centercont>
+			<div id=imgdiv>
+				<img src="{{ url_for('static', filename='images/2.jpg') }}" alt='Police Icon'>
+			</div>
+			<div id=center>
+				<form action="{{url_for('index')}}", method="POST">
+					<label for="username">Username:</label><br>
+					{{ displayField(form.username,'Username',autocomplete='off',autofocus=true) }}
+
+					<label for="pass">Password:</label><br>
+					{{ displayField(form.password,'Password') }}
+
+					<center><input type="submit" value="Login"></center><br>
+					{{ form.csrf_token }}
+				</form>
+			</div>
+	</div>
+{% endblock %}
