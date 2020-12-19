@@ -2,10 +2,9 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, IntegerField, SelectField, SubmitField
 from wtforms.validators import InputRequired, Length, EqualTo
 
-choice = ['Male', 'Female']
-
 class RegistrationForm(FlaskForm):
     """ Registration Form """
+    choice = ['Male', 'Female']
 
     fullname = StringField('fullname_label' , validators=[InputRequired(message="Input required")])
     password = PasswordField('password_label',validators=[InputRequired(message="Input required")])
@@ -13,7 +12,7 @@ class RegistrationForm(FlaskForm):
     personal_email = StringField('personal_email_label',validators=[InputRequired(message="Input required")])
     department_email = StringField('department_email_label',validators=[InputRequired(message="Input required")])
     sex = SelectField(u'Choose',choices=choice)
-    phone_number = IntegerField('phone_number_label',validators=[InputRequired(message="Input required")])
+    phone_number = StringField('phone_number_label',validators=[InputRequired(message="Input required")])
     national_id_card_number = IntegerField('national_id_card_number_label',validators=[InputRequired(message="Input required")])
     username = StringField('username_label',validators=[InputRequired(message="Input required")])
     rank = StringField('rank_label',validators=[InputRequired(message="Input required")])

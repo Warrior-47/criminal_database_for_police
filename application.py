@@ -1,4 +1,5 @@
 from flask import Flask , render_template
+from datetime import datetime
 
 from wtform_fields import *
 from models import *
@@ -7,6 +8,7 @@ app = Flask(__name__)
 app.secret_key = 'replace later'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost/criminal_database'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
@@ -38,7 +40,6 @@ def index():
         db.session.add(user)
         db.session.commit()
         return render_template('index.html',form=log_form)
-
     return render_template("Registration_Page.html", form=reg_form)
 
 
