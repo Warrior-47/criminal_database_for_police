@@ -33,7 +33,11 @@ def index():
             Personal_email=personal_email, Department_email=dept_email,
             privilege = 0)
 
+        officer = police_officers(Username=username, Officer_id=officer_id,
+            Station=station, Rank=rank)
+
         db.session.add(user)
+        db.session.add(officer)
         db.session.commit()
 
         return redirect(url_for('login'))
@@ -52,5 +56,4 @@ def login():
 
 
 if __name__ == "__main__":
-
     app.run(debug=True)
