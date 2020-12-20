@@ -1,5 +1,6 @@
-from flask import Flask , render_template, redirect, url_for
 from datetime import datetime
+from flask import Flask , render_template, redirect, url_for
+from flask_login import LoginManager, login_user, current_user, logout_user
 
 from wtform_fields import *
 from models import *
@@ -11,6 +12,14 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost/cri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)   # Creating the database object
+
+log_in = LoginManager(app)   # Configuring flask-login
+log_in.init_app(app)
+
+
+@log_in.user_loader
+def load_user(username):
+    return Users.query.filter_by(Username=username).first()
 
 
 # The url of the page. '/' means url will be 127.0.0.1:port/
@@ -51,18 +60,22 @@ def index():
         db.session.add(officer)
         db.session.commit()
 
-        return redirect(url_for('login'))   # Taking the user to login page when successfully registered.
+        return redirect(url_for('Login'))   # Taking the user to login page when successfully registered.
 
     return render_template("Registration_Page.html", form=reg_form)   # The html page to load when going to '127.0.0.1:port/'
 
 
 # login Method is called when '127.0.0.1:port/login' this url is used.
 @app.route('/login', methods=['GET', 'POST'])
-def login():
+def Login():
     login_form = LoginForm()   # The form used to make the Login page
 
     # Checks if the username and the corresponding passwords exists in the database
     if login_form.validate_on_submit():
+
+        user_obj = Users.query.filter_by(Username=login_form.username.data).first()
+        login_user(user_obj)
+
         ''' Shows the dashboard after successful login '''
         return redirect(url_for('dashboard'))
 
@@ -72,7 +85,15 @@ def login():
 # login Method is called when '127.0.0.1:port/dashboard' this url is used.
 @app.route('/dashboard', methods=['GET','POST'])
 def dashboard():
+    if not current_user.is_authenticated:
+        return redirect(url_for('Login'))
     return render_template('dashboard.html')   # The html page to load when going to '127.0.0.1:port/dashboard'
+
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    logout_user()
+    return redirect(url_for('Login'))
 
 
 if __name__ == "__main__":
