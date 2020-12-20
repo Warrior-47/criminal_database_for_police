@@ -1,9 +1,10 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, IntegerField, SelectField, SubmitField
-from wtforms.validators import InputRequired, Length, EqualTo
+from wtforms.validators import InputRequired, Length, EqualTo, ValidationError
+from models import *
 
 class RegistrationForm(FlaskForm):
-    """ Registration Form """
+
     choice = ['Male', 'Female']
 
     fullname = StringField('fullname_label' , validators=[InputRequired(message="Input required")])
@@ -19,6 +20,12 @@ class RegistrationForm(FlaskForm):
     station = StringField('station_label',validators=[InputRequired(message="Input required")])
     officer_id = StringField('officer_id_label',validators=[InputRequired(message="Input required")])
     submit_button = SubmitField('Register')
+
+    def validate_username(self, username):
+        user_obj = Users.query.filter_by(Username=username.data).first()
+        if user_obj:
+            raise ValidationError("Username Already Exists. Choose Another.")
+
 
 class LoginForm(FlaskForm):
 

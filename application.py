@@ -29,17 +29,15 @@ def index():
         officer_id = reg_form.officer_id.data
         password = reg_form.password.data
 
-        user_obj = Users.query.filter_by(Username=username).first()
-        if user_obj:
-            return 'Username Exists'
-
         user = Users(Username=username, Name=fullname, NID_No=nid_no,
             Gender=sex[0], Pass=password, Phone_No=phone_number,
             Personal_email=personal_email, Department_email=dept_email,
             privilege = 0)
+        
         db.session.add(user)
         db.session.commit()
         return render_template('index.html',form=log_form)
+
     return render_template("Registration_Page.html", form=reg_form)
 
 
