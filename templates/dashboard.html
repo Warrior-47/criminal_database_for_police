@@ -1,28 +1,29 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width,initial-scale=1">
-		<title>Dashboard</title>
-		<link rel="stylesheet" href="../css/default.css">
-		<link rel="stylesheet" href="../css/dashstylesheet.css">
-	</head>
-	<body>
-    <div id=header>
-      <h1>POLICE DEPARTMENT</h1>
-    </div>
-    <div id=container>
-      <div id=nav>
-        <center>
-          <a href=''>This is navigation</a>
-          <a href=''>This is navigation</a>
-          <a href=''>This is navigation</a>
-        </center>
-      </div>
-      <div id=info>
-				<center><h3>Crime Report</h3></center>
-        <p>This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. </p>
-      </div>
-    </div>
-	</body>
-</html>
+{% from 'form_helper.html' import displayField %}
+
+{% extends "prelogin-layout.html" %}
+
+{% block metadata %}
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/default.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/dashstylesheet.css') }}">
+{% endblock %}
+
+{% block content %}
+<div id=header>
+  <h1>POLICE DEPARTMENT</h1>
+</div>
+<div id=container>
+  <div id=nav>
+	<center>
+	  <a href=''>This is navigation</a>
+	  <a href=''>This is navigation</a>
+	  <a href=''>This is navigation</a>
+	</center>
+  </div>
+  <div id=info>
+			<center><h3>Crime Report</h3></center>
+	<p>This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. </p>
+  </div>
+</div>
+{% endblock %}

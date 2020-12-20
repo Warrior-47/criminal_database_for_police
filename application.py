@@ -41,6 +41,7 @@ def index():
         db.session.commit()
 
         return redirect(url_for('login'))
+
     return render_template("Registration_Page.html", form=reg_form)
 
 
@@ -49,10 +50,13 @@ def index():
 def login():
     login_form = LoginForm()
     if login_form.validate_on_submit():
-        return 'yay'
+        return redirect(url_for('dashboard'))
 
     return render_template('index.html', form=login_form)
 
+@app.route('/dashboard', methods=['GET','POST'])
+def dashboard():
+    return render_template('dashboard.html')
 
 
 if __name__ == "__main__":
