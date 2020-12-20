@@ -24,3 +24,4 @@ class LoginForm(FlaskForm):
 
     username = StringField('username_label',validators=[InputRequired(message="Input required")])
     password = PasswordField('password_label',validators=[InputRequired(message="Input required")])
+    submit_button = SubmitField('Login')

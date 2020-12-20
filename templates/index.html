@@ -25,7 +25,7 @@
 					<label for="pass">Password:</label><br>
 					{{ displayField(form.password,'Password') }}
 
-					<center><input type="submit" value="Login"></center><br>
+					<center>{{ form.submit_button }}</center><br>
 					{{ form.csrf_token }}
 				</form>
 			</div>
