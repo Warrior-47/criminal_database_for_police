@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
-db = SQLAlchemy()
+from application import db
 
 class Users(db.Model):
     Username = db.Column(db.String(128), primary_key=True,
@@ -10,7 +10,7 @@ class Users(db.Model):
         nullable=False)
     NID_No = db.Column(db.String(10), unique=True, nullable=True)
     Gender = db.Column(db.String(1), nullable=False)
-    Pass = db.Column(db.String(64), nullable=False)
+    Pass = db.Column(db.String(96), nullable=False)
     Phone_No = db.Column(db.String(11), nullable=True)
     Personal_email = db.Column(db.String(128), unique=True,
         nullable=False)

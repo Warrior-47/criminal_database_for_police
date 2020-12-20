@@ -18,8 +18,10 @@ db = SQLAlchemy(app)   # Creating the database object
 @app.route("/", methods=['GET', 'POST'])
 def index():
     reg_form= RegistrationForm()   # The form used to make the registration page.
+
     # Checks if the form was submitted with no ValidationError
     if reg_form.validate_on_submit():
+
         # Storing the info taken from Registration_Page
         fullname = reg_form.fullname.data
         sex = reg_form.sex.data
@@ -27,15 +29,17 @@ def index():
         personal_email = reg_form.personal_email.data
         dept_email = reg_form.department_email.data
         nid_no = reg_form.national_id_card_number.data
-        username = reg_form.username.data
         rank = reg_form.rank.data
         station = reg_form.station.data
         officer_id = reg_form.officer_id.data
+        username = reg_form.username.data
         password = reg_form.password.data
+
+        hashed_pswd = pbkdf2_sha256.hash(password)   # Hashed Password
 
         # Making Users and police_officers table object to insert into the database
         user = Users(Username=username, Name=fullname, NID_No=nid_no,
-            Gender=sex[0], Pass=password, Phone_No=phone_number,
+            Gender=sex[0], Pass=hashed_pswd, Phone_No=phone_number,
             Personal_email=personal_email, Department_email=dept_email,
             privilege = 0)
 
@@ -56,6 +60,7 @@ def index():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     login_form = LoginForm()   # The form used to make the Login page
+
     # Checks if the username and the corresponding passwords exists in the database
     if login_form.validate_on_submit():
         ''' Shows the dashboard after successful login '''

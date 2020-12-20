@@ -5,7 +5,7 @@ CREATE TABLE Users(
     Name VARCHAR(128) NOT NULL,
     NID_No CHAR(10) UNIQUE,
     Gender CHAR(1) NOT NULL,
-    pass CHAR(64) NOT NULL,
+    pass CHAR(96) NOT NULL,
     Phone_No CHAR(11),
     Personal_email VARCHAR(128) UNIQUE NOT NULL,
     Department_email VARCHAR(128) UNIQUE NOT NULL,

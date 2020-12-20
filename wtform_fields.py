@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, IntegerField, SelectField, SubmitField
 from wtforms.validators import InputRequired, Length, EqualTo, ValidationError
+from passlib.hash import pbkdf2_sha256
 from models import *
 
 
@@ -16,7 +17,7 @@ def validate_credentials(form, field):
     user_obj = Users.query.filter_by(Username=username_e).first()
     if user_obj is None:
         raise ValidationError("Username or Password do not match.")
-    elif user_obj.Pass != pswd:
+    elif not pbkdf2_sha256.verify(pswd, user_obj.Pass):
         raise ValidationError("Username or Password do not match.")
 
 
