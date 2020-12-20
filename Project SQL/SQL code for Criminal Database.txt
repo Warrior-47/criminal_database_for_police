@@ -20,6 +20,7 @@ CREATE TABLE Police_officers (
     Station VARCHAR(32),
     Rank VARCHAR(32),
     Supervisor_id VARCHAR(128),
+    Clearance INT NOT NULL DEFAULT 10,
 
     PRIMARY KEY(Officer_id),
     FOREIGN KEY(Supervisor_id) REFERENCES Police_officers(Officer_id) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -45,6 +46,7 @@ CREATE TABLE Crime(
     Crime_date DATE,
     End_date DATE,
     Address VARCHAR(128),
+    Clearance INT NOT NULL DEFAULT 10,
 
     PRIMARY KEY(Case_No)
 );

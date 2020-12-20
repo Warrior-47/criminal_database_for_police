@@ -28,6 +28,7 @@ class police_officers(db.Model):
     Station = db.Column(db.String(32), nullable=True)
     Rank = db.Column(db.String(32), nullable=True)
     Supervisor_id = db.Column(db.String(128), db.ForeignKey("police_officers.Officer_id"))
+    Clearance = db.Column(db.Integer(), nullable=False, default=10)
 
     criminals_caught = db.relationship("Caught_by",backref="police_officers")
     investigations = db.relationship("Investigate_by",backref="police_officers")
@@ -57,6 +58,7 @@ class crime(db.Model):
     Crime_date = db.Column(db.DateTime(), default=datetime.utcnow())
     End_date = db.Column(db.DATE())
     Address = db.Column(db.String(128))
+    Clearance = db.Column(db.Integer(), nullable=False, default=10)
 
     evidence = db.relationship("Crime_evidence", backref="crime")
     murder = db.relationship("Murder", backref="crime", uselist=False)
