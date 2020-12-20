@@ -1,4 +1,4 @@
-from flask import Flask , render_template
+from flask import Flask , render_template, redirect, url_for
 from datetime import datetime
 
 from wtform_fields import *
@@ -15,7 +15,6 @@ db = SQLAlchemy(app)
 @app.route("/", methods=['GET', 'POST'])
 def index():
     reg_form= RegistrationForm()
-    log_form = LoginForm()
     if reg_form.validate_on_submit():
         fullname = reg_form.fullname.data
         sex = reg_form.sex.data
@@ -33,12 +32,23 @@ def index():
             Gender=sex[0], Pass=password, Phone_No=phone_number,
             Personal_email=personal_email, Department_email=dept_email,
             privilege = 0)
-        
+
         db.session.add(user)
         db.session.commit()
-        return render_template('index.html',form=log_form)
 
+        return redirect(url_for('login'))
     return render_template("Registration_Page.html", form=reg_form)
+
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    login_form = LoginForm()
+    if login_form.validate_on_submit():
+        return 'yay'
+
+    return render_template('index.html', form=login_form)
+
 
 
 if __name__ == "__main__":

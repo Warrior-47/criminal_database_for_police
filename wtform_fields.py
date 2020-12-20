@@ -3,6 +3,18 @@ from wtforms import StringField, PasswordField, IntegerField, SelectField, Submi
 from wtforms.validators import InputRequired, Length, EqualTo, ValidationError
 from models import *
 
+
+def validate_credentials(form, field):
+    username_e = form.username.data
+    pswd = field.data
+    user_obj = Users.query.filter_by(Username=username_e).first()
+    if user_obj is None:
+        raise ValidationError("Username or Password do not match.")
+    elif user_obj.Pass != pswd:
+        raise ValidationError("Username or Password do not match.")
+
+
+
 class RegistrationForm(FlaskForm):
 
     choice = ['Male', 'Female']
@@ -30,5 +42,5 @@ class RegistrationForm(FlaskForm):
 class LoginForm(FlaskForm):
 
     username = StringField('username_label',validators=[InputRequired(message="Input required")])
-    password = PasswordField('password_label',validators=[InputRequired(message="Input required")])
+    password = PasswordField('password_label',validators=[InputRequired(message="Input required"),validate_credentials])
     submit_button = SubmitField('Login')
