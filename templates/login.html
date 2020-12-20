@@ -20,9 +20,11 @@
 			<div id=center>
 				<form action="{{ url_for('login') }}", method="POST">
 					<label for="username">Username:</label><br>
+					<!-- Connecting the username attribute from LoginForm class in wtforms.py file and checking for error -->
 					{{ displayField(form.username,'Username',autocomplete='off',autofocus=true) }}
 
 					<label for="pass">Password:</label><br>
+					<!-- Connecting the password from LoginForm class in wtforms.py file and checking for error -->
 					{{ displayField(form.password,'Password') }}
 
 					<center>{{ form.submit_button }}</center><br>
