@@ -29,6 +29,13 @@
 
 					<center>{{ form.submit_button }}</center><br>
 					{{ form.csrf_token }}
+					<center>
+						{% with messages = get_flashed_messages(with_categories=true) %}
+				            {% if messages %}
+				                {{ messages[0][1] }}
+				            {% endif %}
+				        {% endwith %}
+					</center>
 				</form>
 			</div>
 	</div>

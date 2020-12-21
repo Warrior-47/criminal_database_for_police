@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Flask , render_template, redirect, url_for
+from flask import Flask , render_template, redirect, url_for, flash
 from flask_login import LoginManager, login_user, current_user, logout_user
 
 from wtform_fields import *
@@ -60,6 +60,7 @@ def index():
         db.session.add(officer)
         db.session.commit()
 
+        flash('Registered successfully. Please Login.', 'success')
         return redirect(url_for('Login'))   # Taking the user to login page when successfully registered.
 
     return render_template("Registration_Page.html", form=reg_form)   # The html page to load when going to '127.0.0.1:port/'
@@ -86,13 +87,16 @@ def Login():
 @app.route('/dashboard', methods=['GET','POST'])
 def dashboard():
     if not current_user.is_authenticated:
+        flash('Please Login first.','danger')
         return redirect(url_for('Login'))
+
     return render_template('dashboard.html')   # The html page to load when going to '127.0.0.1:port/dashboard'
 
 
 @app.route('/logout', methods=['GET'])
 def logout():
     logout_user()
+    flash('Logged Out Successfully', 'success')
     return redirect(url_for('Login'))
 
 
