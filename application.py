@@ -71,6 +71,10 @@ def index():
 def Login():
     login_form = LoginForm()   # The form used to make the Login page
 
+    # Checking if the user is logged in or not. If so, redirecting to dashboard
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+
     # Checks if the username and the corresponding passwords exists in the database
     if login_form.validate_on_submit():
 
