@@ -66,3 +66,15 @@ class LoginForm(FlaskForm):
     username = StringField('username_label',validators=[InputRequired(message="Input required")])
     password = PasswordField('password_label',validators=[InputRequired(message="Input required"),validate_credentials])
     submit_button = SubmitField('Login')
+
+
+class CriminalForm(FlaskForm):
+    name = StringField('name_label', validators=[InputRequired()])
+    age = IntegerField('age_label', validators=[InputRequired()])
+    nationality = StringField('nationality_label')
+    nid_no = IntegerField('nid_label')
+    motive = StringField('motive_label')
+    phone_number = StringField('phone_number_label')
+    address = StringField('address_label')
+    remark = StringField('remark_label')
+    submit_button = SubmitField('Submit')

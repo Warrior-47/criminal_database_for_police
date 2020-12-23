@@ -2,6 +2,8 @@ from datetime import datetime
 from flask import Flask , render_template, redirect, url_for, flash
 from flask_login import LoginManager, login_user, current_user, logout_user
 
+import pandas as pd
+
 from wtform_fields import *
 from models import *
 
@@ -87,6 +89,13 @@ def Login():
     return render_template('login.html', form=login_form)   # The html page to load when going to '127.0.0.1:port/login'
 
 
+@app.route('/logout', methods=['GET'])
+def logout():
+    logout_user()
+    flash('Logged Out Successfully', 'success')
+    return redirect(url_for('Login'))
+
+
 # login Method is called when '127.0.0.1:port/dashboard' this url is used.
 @app.route('/dashboard', methods=['GET','POST'])
 def dashboard():
@@ -97,11 +106,17 @@ def dashboard():
     return render_template('dashboard.html')   # The html page to load when going to '127.0.0.1:port/dashboard'
 
 
-@app.route('/logout', methods=['GET'])
-def logout():
-    logout_user()
-    flash('Logged Out Successfully', 'success')
-    return redirect(url_for('Login'))
+@app.route('/dashboard/criminals', methods=['GET','POST'])
+def showcriminals():
+    if not current_user.is_authenticated:
+        flash('Please Login first.','danger')
+        return redirect(url_for('Login'))
+    crims = db.session.execute('select * from criminal').fetchall()
+    meta = crims[0].keys()
+    meta.remove('Photo')
+    print(meta)
+
+    return render_template('dashboard.html', data=crims, head=meta)
 
 
 if __name__ == "__main__":

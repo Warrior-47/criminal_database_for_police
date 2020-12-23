@@ -18,24 +18,25 @@
 			<h3><u>Personal Information:</u></h3>
 			<div class=inner>
 				<div class="left">
-					<label for="fname">Full Name:</label><br>
+
 					<!-- Connecting the fullname attribute from RegistrationForm class in wtforms.py file and checking for error -->
 					{{ displayField(form.fullname,'Full Name', autocomplete='off', autofocus=true) }}
 					<label for="sex">Sex:</label><br>
+
 					<!-- Connecting the sex attribute from RegistrationForm class in wtforms.py file and checking for error -->
 					{{ form.sex(class='form-control') }}
-					<label for="phone">Phone Number:</label><br>
+
 					<!-- Connecting the phone_number attribute from RegistrationForm class in wtforms.py file and checking for error -->
 					{{ displayField(form.phone_number,'Phone Number') }}
 				</div>
 				<div class="right">
-					<label for="pmail">Personal Email:</label><br>
+
 					<!-- Connecting the personal_email attribute from RegistrationForm class in wtforms.py file and checking for error -->
 					{{ displayField(form.personal_email,'Personal Email') }}
-					<label for="dmail">Departmental Email:</label><br>
+
 					<!-- Connecting the department_email attribute from RegistrationForm class in wtforms.py file and checking for error -->
 					{{ displayField(form.department_email,'Department Email') }}
-					<label for="nid">National ID Card Number:</label><br>
+
 					<!-- Connecting the national_id_card_number attribute from RegistrationForm class in wtforms.py file and checking for error -->
 					{{ displayField(form.national_id_card_number,'NID No.') }}
 				</div>
@@ -43,24 +44,24 @@
 			<h3><u>Account Information:</u></h3>
 			<div class=inner>
 				<div class="left">
-					<label for="user">Username:</label><br>
+
 					<!-- Connecting the username attribute from RegistrationForm class in wtforms.py file and checking for error -->
 					{{ displayField(form.username,'Username') }}
-					<label for="rank">Rank:</label><br>
+
 					<!-- Connecting the rank attribute from RegistrationForm class in wtforms.py file and checking for error -->
 					{{ displayField(form.rank,'Rank') }}
-					<label for="station">Station:</label><br>
+
 					<!-- Connecting the station attribute from RegistrationForm class in wtforms.py file and checking for error -->
 					{{ displayField(form.station,'Station') }}
 				</div>
 				<div class="right">
-					<label for="offID">Officer ID:</label><br>
+
 					<!-- Connecting the officer_id attribute from RegistrationForm class in wtforms.py file and checking for error -->
 					{{ displayField(form.officer_id,'Officer ID') }}
-					<label for="pass">Password:</label><br>
+
 					<!-- Connecting the password attribute from RegistrationForm class in wtforms.py file and checking for error -->
 					{{ displayField(form.password,'Password') }}
-					<label for="passagn">Confirm Password:</label><br>
+					
 					<!-- Connecting the confirm_pswd attribute from RegistrationForm class in wtforms.py file and checking for error -->
 					{{ displayField(form.confirm_pswd,'Confirm Password') }}
 				</div>

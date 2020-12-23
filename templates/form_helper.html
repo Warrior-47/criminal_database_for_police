@@ -1,6 +1,7 @@
 <!-- This is basically a python function to make reusable code -->
 <!-- See the other html files to see usage -->
 {% macro displayField(fieldName, placeholderValue) %}
+<label>{{ placeholderValue }}:</label><br>
 {{ fieldName(class='form-control',placeholder=placeholderValue,
     **kwargs) }}<br>
 <ul>
@@ -8,4 +9,21 @@
             <li>{{ error }}</li>
     {% endfor %}
 </ul>
+{% endmacro %}
+
+{% macro displayTable(data, head) %}
+<table>
+    <tr>
+        {% for meta in head %}
+        <th>{{ meta }}</th>
+        {% endfor %}
+    </tr>
+    {% for row in data %}
+    <tr>
+        {% for meta in head %}
+            <td>{{ row[meta] }}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
 {% endmacro %}
