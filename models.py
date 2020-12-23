@@ -49,7 +49,7 @@ class criminal(db.Model):
     Phone_No = db.Column(db.String(64))
     Address = db.Column(db.String(128))
 
-    remarks = db.relationship("Criminal_Remarks",backref="criminal")
+    remarks = db.relationship("criminal_remarks",backref="criminal")
     medicals = db.relationship("medical_history",backref="criminal")
     polices_caught = db.relationship("Caught_by",backref="criminal")
     crimes_commited = db.relationship("Committed_by",backref="criminal")
@@ -114,7 +114,7 @@ class Rape(db.Model):
     Case_No = db.Column(db.Integer(), db.ForeignKey("crime.Case_No"), primary_key = True)
 
 
-class Criminal_Remarks(db.Model):
+class criminal_remarks(db.Model):
     Criminal_id = db.Column(db.Integer(), db.ForeignKey("criminal.Criminal_id"), primary_key=True)
     Remark = db.Column(db.String(64),primary_key=True)
 

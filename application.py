@@ -1,6 +1,7 @@
 from datetime import datetime
-from flask import Flask , render_template, redirect, url_for, flash
+from flask import Flask , render_template, redirect, url_for, flash, request
 from flask_login import LoginManager, login_user, current_user, logout_user
+from sqlalchemy import select
 
 import pandas as pd
 
@@ -106,18 +107,45 @@ def dashboard():
     return render_template('dashboard.html')   # The html page to load when going to '127.0.0.1:port/dashboard'
 
 
+# login Method is called when '127.0.0.1:port/dashboard/criminals' this url is used.
 @app.route('/dashboard/criminals', methods=['GET','POST'])
 def showcriminals():
     if not current_user.is_authenticated:
         flash('Please Login first.','danger')
         return redirect(url_for('Login'))
-    crims = db.session.execute('select * from criminal').fetchall()
-    meta = crims[0].keys()
-    meta.remove('Photo')
-    print(meta)
 
-    return render_template('dashboard.html', data=crims, head=meta)
+    stmt = 'Select c.Criminal_id,c.Name,c.Age,c.Nationality,c.Nid_No,c.Motive,c.Phone_No,c.Address,cr.Remark from criminal c, Criminal_Remarks cr where c.Criminal_id = cr.Criminal_id'
+    crims = db.session.execute(stmt).fetchall()
+    if(request.method == 'POST'):
+        return redirect(url_for('insert_criminal'))
+    return render_template('dashboard-criminal.html', data=crims, head=crims[0].keys(), flag=False)
 
+
+@app.route('/dashboard/criminals/insert', methods=['GET','POST'])
+def insert_criminal():
+    insert_info = CriminalForm()
+    if insert_info.validate_on_submit():
+        name = insert_info.name.data
+        age = insert_info.age.data
+        nationality = insert_info.nationality.data
+        motive = insert_info.motive.data
+        phone_number = insert_info.phone_number.data
+        address = insert_info.address.data
+        remark = insert_info.remark.data
+        nid_no = insert_info.nid_no.data
+
+        crim = criminal(Name=name, Age=age, Nationality=nationality,
+            Motive=motive, Phone_No=phone_number, Address=address,NID_No=nid_no)
+        db.session.add(crim)
+        db.session.commit()
+
+        latest_crim = criminal.query.filter_by(NID_No=nid_no).first()
+        crim_remark = criminal_remarks(Criminal_id=latest_crim.Criminal_id, Remark=remark)
+        db.session.add(crim_remark)
+        db.session.commit()
+
+        return redirect(url_for('showcriminals'))
+    return render_template('dashboard-criminal.html', flag=True, form=insert_info)
 
 if __name__ == "__main__":
     app.run(debug=True)   # Running the server with Debug mode on

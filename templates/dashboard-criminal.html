@@ -1,0 +1,59 @@
+{% from 'form_helper.html' import displayField, displayTable %}
+
+{% extends "prelogin-layout.html" %}
+
+{% block metadata %}
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/default.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/dashstylesheet.css') }}">
+{% endblock %}
+
+{% block content %}
+<div id=header>
+  <h1>POLICE DEPARTMENT</h1>
+</div>
+<div id=container>
+  <div id=nav>
+	<center>
+
+	<!-- Only change the 'This is navigation' to the name of the feature -->
+
+	  <a href='{{ url_for('showcriminals') }}'>Criminals</a>
+	  <a href=''>This is navigation</a>
+	  <a href=''>This is navigation</a>
+	</center>
+  </div>
+  <div id=info>
+	  		<!-- Change this if needed -->
+			<center><h3>Criminals</h3></center>
+
+			<!-- Only add html code here after removing the placeholder text -->
+            {% if flag %}
+                <div>
+                    <form action="{{ url_for('insert_criminal') }}", method="POST">
+                        {{ displayField(form.name,'Name') }}
+                        {{ displayField(form.age,'Age') }}
+                        {{ displayField(form.nationality,'Nationality') }}
+                        {{ displayField(form.nid_no,'NID No.') }}
+                        {{ displayField(form.motive,'Motive') }}
+                        {{ displayField(form.phone_number,'Phone No.') }}
+                        {{ displayField(form.address,'Address') }}
+                        {{ displayField(form.remark,'Remark') }}
+                        {{ form.submit_button }}
+    					{{ form.csrf_token }}
+                    </form>
+                </div>
+
+            {% else %}
+                <div>
+                    <form action="{{ url_for('showcriminals') }}", method="POST">
+                        <input type='submit' value='Add'>
+                    </form>
+                    {{ displayTable(data,head) }}
+                </div>
+            {% endif %}
+
+  </div>
+</div>
+{% endblock %}

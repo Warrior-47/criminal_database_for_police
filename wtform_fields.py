@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, IntegerField, SelectField, SubmitField
 from wtforms.validators import InputRequired, Length, EqualTo, ValidationError
 from passlib.hash import pbkdf2_sha256
-from models import *
+from models import Users
 
 
 def validate_credentials(form, field):
