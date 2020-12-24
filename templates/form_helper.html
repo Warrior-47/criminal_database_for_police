@@ -21,7 +21,17 @@
     {% for row in data %}
     <tr>
         {% for meta in head %}
-            <td>{{ row[meta] }}</td>
+            <td>
+            {% if meta == 'Photo' %}
+                {% if row[meta] != None %}
+                    <img src= "../static/criminal_images/{{ row[meta] }}" />
+                {% else %}
+                    <img src= "../static/images/2.jpg" />
+                {% endif %}
+            {% else %}
+                {{ row[meta] }}
+            {% endif %}
+            </td>
         {% endfor %}
     </tr>
     {% endfor %}

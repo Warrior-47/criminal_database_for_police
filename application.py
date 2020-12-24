@@ -1,9 +1,7 @@
 from datetime import datetime
 from flask import Flask , render_template, redirect, url_for, flash, request
 from flask_login import LoginManager, login_user, current_user, logout_user
-from sqlalchemy import select
-
-import pandas as pd
+from werkzeug.utils import secure_filename
 
 from wtform_fields import *
 from models import *
@@ -114,10 +112,12 @@ def showcriminals():
         flash('Please Login first.','danger')
         return redirect(url_for('Login'))
 
-    stmt = 'Select c.Criminal_id,c.Name,c.Age,c.Nationality,c.Nid_No,c.Motive,c.Phone_No,c.Address,cr.Remark from criminal c, Criminal_Remarks cr where c.Criminal_id = cr.Criminal_id'
+    stmt = 'Select c.Photo, c.Criminal_id,c.Name,c.Age,c.Nationality,c.Nid_No,c.Motive,c.Phone_No,c.Address,cr.Remark from criminal c, Criminal_Remarks cr where c.Criminal_id = cr.Criminal_id'
     crims = db.session.execute(stmt).fetchall()
-    if(request.method == 'POST'):
+
+    if request.method == 'POST':
         return redirect(url_for('insert_criminal'))
+
     return render_template('dashboard-criminal.html', data=crims, head=crims[0].keys(), flag=False)
 
 
@@ -133,9 +133,11 @@ def insert_criminal():
         address = insert_info.address.data
         remark = insert_info.remark.data
         nid_no = insert_info.nid_no.data
+        photo_name = secure_filename(insert_info.photo.data.filename)
+        insert_info.photo.data.save('static/criminal_images/'+photo_name)
 
         crim = criminal(Name=name, Age=age, Nationality=nationality,
-            Motive=motive, Phone_No=phone_number, Address=address,NID_No=nid_no)
+            Motive=motive, Phone_No=phone_number, Address=address,NID_No=nid_no, Photo=photo_name)
         db.session.add(crim)
         db.session.commit()
 

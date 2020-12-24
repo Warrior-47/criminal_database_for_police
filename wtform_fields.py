@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, IntegerField, SelectField, SubmitField
+from wtforms import StringField, PasswordField, IntegerField, SelectField, SubmitField, FileField
 from wtforms.validators import InputRequired, Length, EqualTo, ValidationError
 from passlib.hash import pbkdf2_sha256
 from models import Users
@@ -77,4 +77,5 @@ class CriminalForm(FlaskForm):
     phone_number = StringField('phone_number_label')
     address = StringField('address_label')
     remark = StringField('remark_label')
+    photo = FileField('photo_label')
     submit_button = SubmitField('Submit')

@@ -46,7 +46,7 @@ div#info {
   overflow-y: auto;
 }
 
-div a {
+div#nav a {
   display: block;
   font-size: 20px;
   padding: 20px;

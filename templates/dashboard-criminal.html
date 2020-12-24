@@ -31,7 +31,8 @@
 			<!-- Only add html code here after removing the placeholder text -->
             {% if flag %}
                 <div>
-                    <form action="{{ url_for('insert_criminal') }}", method="POST">
+                    <form action="{{ url_for('insert_criminal') }}", method="POST" enctype='multipart/form-data'>
+                        {{ form.hidden_tag() }}
                         {{ displayField(form.name,'Name') }}
                         {{ displayField(form.age,'Age') }}
                         {{ displayField(form.nationality,'Nationality') }}
@@ -40,8 +41,8 @@
                         {{ displayField(form.phone_number,'Phone No.') }}
                         {{ displayField(form.address,'Address') }}
                         {{ displayField(form.remark,'Remark') }}
+                        {{ displayField(form.photo, 'Photo')}}
                         {{ form.submit_button }}
-    					{{ form.csrf_token }}
                     </form>
                 </div>
 
