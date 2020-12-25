@@ -19,9 +19,9 @@
 
 	<!-- Only change the 'This is navigation' to the name of the feature -->
 
-        <a href='{{ url_for('dashboard') }}'>Dashboard</a>
-        <a href='{{ url_for('showcriminals') }}'>Criminals</a>
-    	<a href=''>This is navigation</a>
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('showcriminals') }}">Criminals</a>
+    	<a href=''>Navigation</a>
 	</center>
   </div>
   <div id=info>
@@ -48,7 +48,7 @@
                     {{ displayField(form.phone_number,'Phone No.') }}<br>
                     {{ displayField(form.address,'Address') }}<br>
                     {{ displayField(form.remark,'Remark') }}<br>
-                    {{ displayField(form.photo, 'Photo')}}<br>
+                    {{ form.photo }}<br>
                     {{ form.submit_button }}
                 </form>
             </div>
@@ -62,9 +62,20 @@
                 <form action="{{ url_for('insert_criminal') }}", method="GET">
                     <input type='submit' value='Add'>
                 </form>
+                <form action="{{ url_for('showcriminals') }}", method="POST", enctype='multipart/form-data'>
+                    <label for='update'>Criminal_ID</label><br>
+                    <input required type='number' name='update_id' id='update' placeholder='Criminal_ID to Update'><br>
+                    <input required type='file' name='photo' id='photo'><br>
+                    <input type='submit' name='update' id='update_button' value='Update'>
+                </form>
                 {{ displayTable(data,head) }}
             </div>
         {% else %}
+            <form action="{{ url_for('query') }}", method="POST">
+                {{ form.hidden_tag() }}
+                {{ displayField(form.query, 'Photo Query') }}
+                {{ form.search }}
+            </form>
             {{ displayTable(data,head) }}
         {% endif %}
   </div>

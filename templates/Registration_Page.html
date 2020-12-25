@@ -15,6 +15,7 @@
 	</div>
 	<div id=container>
 		<form action="{{ url_for('index') }}", method="POST">
+			{{ form.hidden_tag() }}
 			<h3><u>Personal Information:</u></h3>
 			<div class=inner>
 				<div class="left">
@@ -66,8 +67,7 @@
 					{{ displayField(form.confirm_pswd,'Confirm Password') }}<br>
 				</div>
 			</div>
-			<center>{{ form.submit_button }}</center><br>
-			{{ form.csrf_token }}
+			<br><center>{{ form.submit_button }}</center><br>
 		</form>
 	</div>
 {% endblock %}

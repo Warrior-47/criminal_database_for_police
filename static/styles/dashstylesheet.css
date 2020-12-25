@@ -84,3 +84,20 @@ form input[type="submit"]:hover {
 form label {
   font-size: 18px;
 }
+
+table { border-collapse: collapse; }
+
+tr:nth-child(even) {
+    background: #CCC;
+    border: solid thin;
+}
+tr:nth-child(odd) {
+    background: #FFF;
+    border: solid thin;
+}
+
+td, th {
+    text-align: center;
+    border: solid thin;
+    width: 150px;
+}

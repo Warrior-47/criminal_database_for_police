@@ -115,6 +115,18 @@ def showcriminals():
         flash('Please Login first.','danger')
         return redirect(url_for('Login'))
 
+    if request.method == 'POST':
+        crim_id = request.form['update_id']
+        crim = criminal.query.filter_by(Criminal_id=crim_id).first()
+        if crim:
+            photo = request.files['photo']
+            photo_name = secure_filename(photo.filename)
+            crim.Photo = photo_name
+            db.session.merge(crim)
+            db.session.commit()
+            photo.save('static/criminal_images/'+photo_name)
+
+
     stmt = 'Select c.Photo, c.Criminal_id,c.Name,c.Age,c.Nationality,c.Nid_No,c.Motive,c.Phone_No,c.Address,cr.Remark from criminal c, Criminal_Remarks cr where c.Criminal_id = cr.Criminal_id'
     crims = db.session.execute(stmt).fetchall()
     return render_template('dashboard-criminal.html', form=search, data=crims, head=crims[0].keys(), flag='show')
@@ -155,12 +167,11 @@ def query():
     search = SearchForm()
 
     if search.validate_on_submit():
-
         query = search.query.data
         stmt = "Select Photo, Criminal_id, Name, Age, Nationality, NID_No, Phone_No, Address from criminal where Photo = '"+query+"'"
         data = db.session.execute(stmt).fetchall()
         if data:
-            return render_template('dashboard-criminal.html',flag='query', data=data, head=data[0].keys())
+            return render_template('dashboard-criminal.html',flag='query', form=search, data=data, head=data[0].keys())
 
     flash('No Photo Found.', 'danger')
     return redirect(url_for('showcriminals'))
