@@ -99,7 +99,9 @@ def logout():
 @app.route('/dashboard', methods=['GET','POST'])
 def dashboard():
     if not current_user.is_authenticated:
+
         flash('Please Login first.','danger')
+
         return redirect(url_for('Login'))
 
     return render_template('dashboard.html')   # The html page to load when going to '127.0.0.1:port/dashboard'
@@ -108,17 +110,14 @@ def dashboard():
 # login Method is called when '127.0.0.1:port/dashboard/criminals' this url is used.
 @app.route('/dashboard/criminals', methods=['GET','POST'])
 def showcriminals():
+    search = SearchForm()
     if not current_user.is_authenticated:
         flash('Please Login first.','danger')
         return redirect(url_for('Login'))
 
     stmt = 'Select c.Photo, c.Criminal_id,c.Name,c.Age,c.Nationality,c.Nid_No,c.Motive,c.Phone_No,c.Address,cr.Remark from criminal c, Criminal_Remarks cr where c.Criminal_id = cr.Criminal_id'
     crims = db.session.execute(stmt).fetchall()
-
-    if request.method == 'POST':
-        return redirect(url_for('insert_criminal'))
-
-    return render_template('dashboard-criminal.html', data=crims, head=crims[0].keys(), flag=False)
+    return render_template('dashboard-criminal.html', form=search, data=crims, head=crims[0].keys(), flag='show')
 
 
 @app.route('/dashboard/criminals/insert', methods=['GET','POST'])
@@ -147,7 +146,24 @@ def insert_criminal():
         db.session.commit()
 
         return redirect(url_for('showcriminals'))
-    return render_template('dashboard-criminal.html', flag=True, form=insert_info)
+
+    return render_template('dashboard-criminal.html', flag='insert', form=insert_info)
+
+
+@app.route('/dashboard/criminals/query', methods=['GET','POST'])
+def query():
+    search = SearchForm()
+
+    if search.validate_on_submit():
+
+        query = search.query.data
+        stmt = "Select Photo, Criminal_id, Name, Age, Nationality, NID_No, Phone_No, Address from criminal where Photo = '"+query+"'"
+        data = db.session.execute(stmt).fetchall()
+        if data:
+            return render_template('dashboard-criminal.html',flag='query', data=data, head=data[0].keys())
+
+    flash('No Photo Found.', 'danger')
+    return redirect(url_for('showcriminals'))
 
 if __name__ == "__main__":
     app.run(debug=True)   # Running the server with Debug mode on

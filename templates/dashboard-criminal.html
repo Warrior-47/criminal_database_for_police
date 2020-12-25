@@ -19,42 +19,54 @@
 
 	<!-- Only change the 'This is navigation' to the name of the feature -->
 
-	  <a href='{{ url_for('showcriminals') }}'>Criminals</a>
-	  <a href=''>This is navigation</a>
-	  <a href=''>This is navigation</a>
+        <a href='{{ url_for('dashboard') }}'>Dashboard</a>
+        <a href='{{ url_for('showcriminals') }}'>Criminals</a>
+    	<a href=''>This is navigation</a>
 	</center>
   </div>
   <div id=info>
 	  		<!-- Change this if needed -->
-			<center><h3>Criminals</h3></center>
+		<center>
+            <h3>Criminals</h3>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {{ messages[0][1] }}
+                {% endif %}
+            {% endwith %}
+        </center>
 
-			<!-- Only add html code here after removing the placeholder text -->
-            {% if flag %}
-                <div>
-                    <form action="{{ url_for('insert_criminal') }}", method="POST" enctype='multipart/form-data'>
-                        {{ form.hidden_tag() }}
-                        {{ displayField(form.name,'Name') }}
-                        {{ displayField(form.age,'Age') }}
-                        {{ displayField(form.nationality,'Nationality') }}
-                        {{ displayField(form.nid_no,'NID No.') }}
-                        {{ displayField(form.motive,'Motive') }}
-                        {{ displayField(form.phone_number,'Phone No.') }}
-                        {{ displayField(form.address,'Address') }}
-                        {{ displayField(form.remark,'Remark') }}
-                        {{ displayField(form.photo, 'Photo')}}
-                        {{ form.submit_button }}
-                    </form>
-                </div>
-
-            {% else %}
-                <div>
-                    <form action="{{ url_for('showcriminals') }}", method="POST">
-                        <input type='submit' value='Add'>
-                    </form>
-                    {{ displayTable(data,head) }}
-                </div>
-            {% endif %}
-
+		<!-- Only add html code here after removing the placeholder text -->
+        {% if flag == 'insert' %}
+            <div>
+                <form action="{{ url_for('insert_criminal') }}", method="POST" enctype='multipart/form-data'>
+                    {{ form.hidden_tag() }}
+                    {{ displayField(form.name,'Name') }}<br>
+                    {{ displayField(form.age,'Age') }}<br>
+                    {{ displayField(form.nationality,'Nationality') }}<br>
+                    {{ displayField(form.nid_no,'NID No.') }}<br>
+                    {{ displayField(form.motive,'Motive') }}<br>
+                    {{ displayField(form.phone_number,'Phone No.') }}<br>
+                    {{ displayField(form.address,'Address') }}<br>
+                    {{ displayField(form.remark,'Remark') }}<br>
+                    {{ displayField(form.photo, 'Photo')}}<br>
+                    {{ form.submit_button }}
+                </form>
+            </div>
+        {% elif flag == 'show' %}
+            <div>
+                <form action="{{ url_for('query') }}", method="POST">
+                    {{ form.hidden_tag() }}
+                    {{ displayField(form.query, 'Photo Query') }}
+                    {{ form.search }}
+                </form>
+                <form action="{{ url_for('insert_criminal') }}", method="GET">
+                    <input type='submit' value='Add'>
+                </form>
+                {{ displayTable(data,head) }}
+            </div>
+        {% else %}
+            {{ displayTable(data,head) }}
+        {% endif %}
   </div>
 </div>
 {% endblock %}

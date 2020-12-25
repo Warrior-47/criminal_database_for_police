@@ -31,7 +31,7 @@ class RegistrationForm(FlaskForm):
     '''
     choice = ['Male', 'Female']
 
-    fullname = StringField('fullname_label' , validators=[InputRequired(message="Input required")])
+    fullname = StringField('fullname_label', validators=[InputRequired(message="Input required")])
     password = PasswordField('password_label',validators=[InputRequired(message="Input required")])
     confirm_pswd = PasswordField('confirm_pswd_label',validators=[InputRequired(message="Input required"), EqualTo('password', message='Password doesn\'t match.')])
     personal_email = StringField('personal_email_label',validators=[InputRequired(message="Input required")])
@@ -79,3 +79,8 @@ class CriminalForm(FlaskForm):
     remark = StringField('remark_label')
     photo = FileField('photo_label')
     submit_button = SubmitField('Submit')
+
+
+class SearchForm(FlaskForm):
+    query = StringField('query_label', validators=[InputRequired()])
+    search = SubmitField('Search')

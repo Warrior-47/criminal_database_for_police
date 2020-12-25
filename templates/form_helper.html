@@ -3,12 +3,14 @@
 {% macro displayField(fieldName, placeholderValue) %}
 <label>{{ placeholderValue }}:</label><br>
 {{ fieldName(class='form-control',placeholder=placeholderValue,
-    **kwargs) }}<br>
-<ul>
-    {% for error in fieldName.errors %}
-            <li>{{ error }}</li>
-    {% endfor %}
-</ul>
+    **kwargs) }}
+{% if fieldName.errors|length != 0 %}
+    <ul>
+        {% for error in fieldName.errors %}
+                <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
 {% endmacro %}
 
 {% macro displayTable(data, head) %}
@@ -24,9 +26,9 @@
             <td>
             {% if meta == 'Photo' %}
                 {% if row[meta] != None %}
-                    <img src= "../static/criminal_images/{{ row[meta] }}" />
+                    <img src= "{{ url_for('static', filename='criminal_images/'+row[meta]) }}" style='width: 120px; height:120px' />
                 {% else %}
-                    <img src= "../static/images/2.jpg" />
+                    <img src= "../static/criminal_images/default_photo.jpg" style='width: 120px; height:120px' />
                 {% endif %}
             {% else %}
                 {{ row[meta] }}

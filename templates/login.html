@@ -15,15 +15,15 @@
 	</div>
 	<div id=centercont>
 			<div id=imgdiv>
-				<img src="../static/images/2.jpg" alt='Police Icon'>
+				<img src="{{ url_for('static', filename='images/2.jpg') }}" alt='Police Icon'>
 			</div>
 			<div id=center>
 				<form action="{{ url_for('Login') }}", method="POST">
 					<!-- Connecting the username attribute from LoginForm class in wtforms.py file and checking for error -->
-					{{ displayField(form.username,'Username',autocomplete='off',autofocus=true) }}
+					{{ displayField(form.username,'Username',autocomplete='off',autofocus=true) }}<br>
 
 					<!-- Connecting the password from LoginForm class in wtforms.py file and checking for error -->
-					{{ displayField(form.password,'Password') }}
+					{{ displayField(form.password,'Password') }}<br>
 
 					<center>{{ form.submit_button }}</center><br>
 					{{ form.csrf_token }}
