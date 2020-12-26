@@ -4,6 +4,8 @@ from flask_login import UserMixin
 
 from application import db
 
+""" The Model for my entire database """
+
 class Users(UserMixin, db.Model):
     Username = db.Column(db.String(128), primary_key=True,
         unique=True, nullable=False)

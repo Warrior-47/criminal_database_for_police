@@ -6,12 +6,12 @@ from models import Users
 
 
 def validate_credentials(form, field):
-    '''
+    """
     This is checking the login info given by using, and checking
     if the database contains the user and if the password provided
     is the correct password.
 
-    '''
+    """
     username_e = form.username.data
     pswd = field.data
     user_obj = Users.query.filter_by(Username=username_e).first()
@@ -23,12 +23,12 @@ def validate_credentials(form, field):
 
 
 class RegistrationForm(FlaskForm):
-    '''
+    """
     This the where all the info from the Registration_Page gets store in.
     All the different attributes are each a input field in Registration_Page
     See the Registration_Page.html file to see how they are connected
 
-    '''
+    """
     choice = ['Male', 'Female']
 
     fullname = StringField('fullname_label', validators=[InputRequired(message="Input required")])
@@ -46,29 +46,33 @@ class RegistrationForm(FlaskForm):
     submit_button = SubmitField('Register')
 
     def validate_username(self, username):
-        '''
+        """
         This is validating if the username already exists in the database. If so, raises an ValidationError
         and form is not submitted.
 
-        '''
+        """
         user_obj = Users.query.filter_by(Username=username.data).first()
         if user_obj:
             raise ValidationError("Username Already Exists. Choose Another.")
 
 
 class LoginForm(FlaskForm):
-    '''
+    """
     This the where all the info from the login page gets store in.
     All the different attributes are each a input field in login page.
     See the login.html file to see how they are connected
 
-    '''
+    """
     username = StringField('username_label',validators=[InputRequired(message="Input required")])
     password = PasswordField('password_label',validators=[InputRequired(message="Input required"),validate_credentials])
     submit_button = SubmitField('Login')
 
 
 class CriminalForm(FlaskForm):
+    """
+    This the where all the info to store a criminal in database.
+
+    """
     name = StringField('name_label', validators=[InputRequired()])
     age = IntegerField('age_label', validators=[InputRequired()])
     nationality = StringField('nationality_label')
@@ -82,5 +86,9 @@ class CriminalForm(FlaskForm):
 
 
 class SearchForm(FlaskForm):
+    """
+    Used for search queries
+
+    """
     query = StringField('query_label', validators=[InputRequired()])
     search = SubmitField('Search')
