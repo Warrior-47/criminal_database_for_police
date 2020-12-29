@@ -151,37 +151,6 @@ def showcriminals():
     return render_template('dashboard-criminal.html', form_i=insert_info, form_s=search, data=crims, head=crims[0].keys(), flag='show')
 
 
-@app.route('/dashboard/criminals-old', methods=['GET', 'POST'])
-def showcriminal():
-    search = SearchForm()
-
-    if not current_user.is_authenticated:
-        flash('Please Login first.', 'danger')
-        return redirect(url_for('Login'))
-
-    if request.method == 'POST':
-        # Updating Criminal Photo
-        crim_id = request.form['update_id']
-        crim = criminal.query.filter_by(Criminal_id=crim_id).first()
-        if crim:
-            photo = request.files['photo']
-            photo_name = secure_filename(photo.filename)
-            crim.Photo = photo_name
-            db.session.merge(crim)
-            db.session.commit()
-            db.session.close()
-            flash('Updated Successfully', 'success')
-            photo.save('static/criminal_images/'+photo_name)
-        else:
-            flash('No such Criminal', 'danger')
-
-    # Show All criminal Information to Front-end
-    stmt = 'Select c.Photo, c.Criminal_id,c.Name,c.Age,c.Nationality,c.Nid_No,c.Motive,c.Phone_No,c.Address,cr.Remark from criminal c left join criminal_remarks cr on c.Criminal_id = cr.Criminal_id'
-    crims = db.session.execute(stmt).fetchall()
-    db.session.close()
-    return render_template('dashboard-criminal-old.html', form=search, data=crims, head=crims[0].keys(), flag='show')
-
-
 # Route used to insert a Criminal to the database
 @app.route('/dashboard/criminals/insert', methods=['POST'])
 def insert_criminal():
@@ -242,6 +211,7 @@ def query():
 def shutdown_session(exception=None):
     print(db.engine.pool.status())
     db.session.remove()
+    print(db.engine.pool.status())
 
 
 if __name__ == "__main__":
