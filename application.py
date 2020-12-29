@@ -5,14 +5,19 @@ from werkzeug.utils import secure_filename
 
 from wtform_fields import *
 from models import *
+from extensions import cache
+import pickle
 
 app = Flask(__name__)  # Creating the server app
+cache.init_app(app, config={'CACHE_TYPE': 'simple'})
 app.secret_key = 'replace later'
 
 # Connecting to database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost/criminal_database'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+app.config['SQLALCHEMY_POOL_SIZE'] = 10
+app.config['SQLALCHEMY_MAX_OVERFLOW'] = 15
+app.config['SQLALCHEMY_POOL_RECYCLE'] = 10
 db = SQLAlchemy(app)   # Creating the database object
 
 log_in = LoginManager(app)   # Configuring flask-login
@@ -21,9 +26,14 @@ log_in.init_app(app)
 
 @log_in.user_loader
 def load_user(username):
-    obj = Users.query.filter_by(Username=username).first()
-    db.session.close()
-
+    user = 'user_{}'.format(username)
+    obj = pickle.loads(cache.get(user)) if cache.get(user) else None
+    if obj is None:
+        query = Users.query.filter_by(Username=username).first()
+        obj = pickle.dumps(query)
+        cache.set(user, obj, timeout=3600)
+        db.session.close()
+        return query
     return obj  # Logging in user
 
 
@@ -98,9 +108,12 @@ def Login():
 # This method allows the user to logout
 @app.route('/logout', methods=['GET'])
 def logout():
+    # So that there is flash message only when user actually logs out
     if not current_user.is_authenticated:
         return redirect(url_for('Login'))
 
+    user = 'user_{}'.format(current_user.get_id())
+    cache.delete(user)
     logout_user()
     flash('Logged Out Successfully', 'success')
     return redirect(url_for('Login'))
@@ -146,9 +159,10 @@ def showcriminals():
 
     # Show All criminal Information to Front-end
     stmt = 'Select c.Photo, c.Criminal_id AS "Criminal ID",c.Name,c.Age,c.Nationality,c.Nid_No AS "NID No.",c.Motive,c.Phone_No AS "Phone No.",c.Address,cr.Remark from criminal c left join criminal_remarks cr on c.Criminal_id = cr.Criminal_id'
+    res = criminal.query.all()
     crims = db.session.execute(stmt).fetchall()
     db.session.close()
-    return render_template('dashboard-criminal.html', form_i=insert_info, form_s=search, data=crims, head=crims[0].keys(), flag='show')
+    return render_template('dashboard-criminal.html', form_i=insert_info, form_s=search, data=crims, head=crims[0].keys())
 
 
 # Route used to insert a Criminal to the database
@@ -201,7 +215,7 @@ def query():
         data = db.session.execute(stmt).fetchall()
         db.session.close()
         if data:
-            return render_template('dashboard-criminal.html', flag='query', form_i=insert_info, form_s=search, data=data, head=data[0].keys())
+            return render_template('dashboard-criminal.html', form_i=insert_info, form_s=search, data=data, head=data[0].keys())
 
     flash('No Photo Found', 'danger')
     return redirect(url_for('showcriminals'))
@@ -209,10 +223,9 @@ def query():
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
-    print(db.engine.pool.status())
     db.session.remove()
-    print(db.engine.pool.status())
+    db.engine.dispose()
 
 
 if __name__ == "__main__":
-    app.run(debug=True)   # Running the server with Debug mode on
+    app.run(debug=False)   # Running the server with Debug mode on
