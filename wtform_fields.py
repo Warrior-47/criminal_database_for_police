@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, IntegerField, SelectField, SubmitField, FileField
-from wtforms.validators import InputRequired, Length, EqualTo, ValidationError
+from wtforms.validators import InputRequired, Length, EqualTo, ValidationError, Email
 from passlib.hash import pbkdf2_sha256
 from models import Users
 
@@ -21,7 +21,6 @@ def validate_credentials(form, field):
         raise ValidationError("Username or Password do not match.")
 
 
-
 class RegistrationForm(FlaskForm):
     """
     This the where all the info from the Registration_Page gets store in.
@@ -29,20 +28,26 @@ class RegistrationForm(FlaskForm):
     See the Registration_Page.html file to see how they are connected
 
     """
-    choice = ['Male', 'Female']
+    choice = ['Sex:', 'Male', 'Female']
 
     fullname = StringField('fullname_label', validators=[InputRequired(message="Input required")])
-    password = PasswordField('password_label',validators=[InputRequired(message="Input required")])
-    confirm_pswd = PasswordField('confirm_pswd_label',validators=[InputRequired(message="Input required"), EqualTo('password', message='Password doesn\'t match.')])
-    personal_email = StringField('personal_email_label',validators=[InputRequired(message="Input required")])
-    department_email = StringField('department_email_label',validators=[InputRequired(message="Input required")])
-    sex = SelectField(u'Choose',choices=choice)
-    phone_number = StringField('phone_number_label',validators=[InputRequired(message="Input required")])
-    national_id_card_number = IntegerField('national_id_card_number_label',validators=[InputRequired(message="Input required")])
-    username = StringField('username_label',validators=[InputRequired(message="Input required")])
-    rank = StringField('rank_label',validators=[InputRequired(message="Input required")])
-    station = StringField('station_label',validators=[InputRequired(message="Input required")])
-    officer_id = StringField('officer_id_label',validators=[InputRequired(message="Input required")])
+    password = PasswordField('password_label', validators=[InputRequired(message="Input required")])
+    confirm_pswd = PasswordField('confirm_pswd_label', validators=[InputRequired(
+        message="Input required"), EqualTo('password', message='Password doesn\'t match.')])
+    personal_email = StringField('personal_email_label', validators=[
+                                 InputRequired(message="Input required"), Email('Not a valid email')])
+    department_email = StringField('department_email_label', validators=[
+                                   InputRequired(message="Input required"), Email('Not a valid email')])
+    sex = SelectField(u'Choose', choices=choice)
+    phone_number = StringField('phone_number_label', validators=[
+                               InputRequired(message="Input required")])
+    national_id_card_number = IntegerField('national_id_card_number_label', validators=[
+                                           InputRequired(message="Input required")])
+    username = StringField('username_label', validators=[InputRequired(message="Input required")])
+    rank = StringField('rank_label', validators=[InputRequired(message="Input required")])
+    station = StringField('station_label', validators=[InputRequired(message="Input required")])
+    officer_id = StringField('officer_id_label', validators=[
+                             InputRequired(message="Input required")])
     submit_button = SubmitField('Register')
 
     def validate_username(self, username):
@@ -55,6 +60,10 @@ class RegistrationForm(FlaskForm):
         if user_obj:
             raise ValidationError("Username Already Exists. Choose Another.")
 
+    def validate_sex(self, sex):
+        if sex.data == 'Sex:':
+            raise ValidationError("You must choose")
+
 
 class LoginForm(FlaskForm):
     """
@@ -63,9 +72,10 @@ class LoginForm(FlaskForm):
     See the login.html file to see how they are connected
 
     """
-    username = StringField('username_label',validators=[InputRequired(message="Input required")])
-    password = PasswordField('password_label',validators=[InputRequired(message="Input required"),validate_credentials])
-    submit_button = SubmitField('Login')
+    username = StringField('username_label', validators=[InputRequired(message="Input required")])
+    password = PasswordField('password_label', validators=[
+                             InputRequired(message="Input required"), validate_credentials])
+    submit_button = SubmitField('Sign in')
 
 
 class CriminalForm(FlaskForm):

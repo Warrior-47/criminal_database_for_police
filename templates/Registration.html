@@ -1,0 +1,88 @@
+{% from 'form_helper.html' import displayField %}
+
+{% extends "prelogin-layout.html" %}
+
+{% block title %}<title>Register</title>{% endblock %}
+<!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/default.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/stylesheet.css') }}"> -->
+{% block style %}
+<link href="../static/assets/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+    body {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+    }
+
+    @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+            font-size: 3.5rem;
+        }
+    }
+
+    .break {
+        flex-basis: 100%;
+        height: 0;
+    }
+</style>
+
+
+<!-- Custom styles for this template -->
+<link href="../static/styles/signin.css" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+<div class='jumbotron' style="margin: -1000px auto;">
+    <div class="container">
+        <h1 class='text-center'>POLICE DEPARTMENT</h1>
+    </div>
+</div>
+<div class="break"></div>
+<main class="form-signin">
+    <form action="{{ url_for('index') }}" method="POST">
+        {{ form.hidden_tag() }}
+        <h1 class="h3 mb-3 fw-normal">Personal Information:</h1><br>
+        {{ displayField(form.fullname,'Full Name', autocomplete='off', autofocus=true) }} <br>
+        {{ displayField(form.national_id_card_number,'NID No.', autocomplete='off') }} <br>
+        {{ displayField(form.phone_number,'Phone Number', autocomplete='off') }} <br>
+        {{ displayField(form.personal_email,'Personal Email', autocomplete='off') }} <br>
+        {{ displayField(form.department_email,'Department Email', autocomplete='off') }} <br>
+        {{ form.sex(class='form-select') }}
+        {% if form.sex.errors|length != 0 %}
+        <ul>
+            {% for error in form.sex.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        <p></p>
+
+</main>
+<div class="col-xs-1">
+    <img class="mb-4" src="../static/assets/brand/iconmonstr-police-10.svg" alt="" width="150" height="150">
+</div>
+<main class="form-signin">
+    <h1 class="h3 mb-3 fw-normal">Account Information:</h1><br>
+    {{ displayField(form.username,'Username',autocomplete='off') }}<br>
+    {{ displayField(form.rank,'Rank',autocomplete='off') }}<br>
+    {{ displayField(form.station,'Station',autocomplete='off') }}<br>
+    {{ displayField(form.officer_id,'Officer ID',autocomplete='off') }}<br>
+    {{ displayField(form.password,'Password') }}<br>
+    {{ displayField(form.confirm_pswd,'Confirm Password') }}
+</main>
+<div class="break"></div>
+<main class='form-signin'>
+    {{ form.submit_button(class="w-100 btn btn-lg btn-success") }}
+    </form>
+    <p>Already a User? <a href="{{ url_for('Login') }}" class="text-success">Login</a></p>
+</main>
+{% endblock %}

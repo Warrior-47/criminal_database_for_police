@@ -2,39 +2,58 @@
 
 {% extends "prelogin-layout.html" %}
 
-{% block metadata %}
-	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<title>Login Page</title>
-	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/default.css') }}">
-	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/stylesheet.css') }}">
+{% block title %}<title>Login</title>{% endblock %}
+<!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/default.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/stylesheet.css') }}"> -->
+{% block style %}
+<link href="../static/assets/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+	.bd-placeholder-img {
+		font-size: 1.125rem;
+		text-anchor: middle;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		user-select: none;
+	}
+
+	@media (min-width: 768px) {
+		.bd-placeholder-img-lg {
+			font-size: 3.5rem;
+		}
+	}
+</style>
+
+
+<!-- Custom styles for this template -->
+<link href="../static/styles/signin.css" rel="stylesheet">
 {% endblock %}
 
+
 {% block content %}
-	<div id = header>
-			<h1>POLICE DEPARTMENT</h1>
+<div class='jumbotron'>
+	<div class="container">
+		<h1 class='text-center'>POLICE DEPARTMENT</h1>
 	</div>
-	<div id=centercont>
-			<div id=imgdiv>
-				<img src="{{ url_for('static', filename='images/2.jpg') }}" alt='Police Icon'>
-			</div>
-			<div id=center>
-				<form action="{{ url_for('Login') }}", method="POST">
-					<!-- Connecting the username attribute from LoginForm class in wtforms.py file and checking for error -->
-					{{ displayField(form.username,'Username',autocomplete='off',autofocus=true) }}<br>
-
-					<!-- Connecting the password from LoginForm class in wtforms.py file and checking for error -->
-					{{ displayField(form.password,'Password') }}<br>
-
-					<center>{{ form.submit_button }}</center><br>
-					{{ form.csrf_token }}
-					<center>
-						{% with messages = get_flashed_messages(with_categories=true) %}
-				            {% if messages %}
-				                {{ messages[0][1] }}
-				            {% endif %}
-				        {% endwith %}
-					</center>
-				</form>
-			</div>
+</div>
+<main class="form-signin">
+	<form action="{{ url_for('Login') }}" method="POST">
+		{{ form.hidden_tag() }}
+		<img class="mb-4" src="../static/assets/brand/iconmonstr-police-10.svg" alt="" width="150" height="150">
+		<h1 class="h3 mb-3 fw-normal">Login</h1>
+		{{ displayField(form.username,'Username',autocomplete='off',autofocus=true) }}
+		{{ displayField(form.password,'Password') }}
+		{{ form.submit_button(class="w-100 btn btn-lg btn-primary") }}
+	</form>
+	<br>
+	<p>Not a User? <a href="{{ url_for('index') }}" class="text-primary">Register</a></p>
+	{% with messages = get_flashed_messages(with_categories=true) %}
+	{% for category, message in messages %}
+	<div class="alert alert-{{ category }} alert-dismissible" role="alert">
+		{{ message }}
 	</div>
+	{% endfor %}
+	{% endwith %}
+
+</main>
 {% endblock %}

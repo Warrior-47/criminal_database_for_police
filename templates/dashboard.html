@@ -1,37 +1,84 @@
-{% from 'form_helper.html' import displayField %}
+{% from 'form_helper.html' import displayField, displayTable %}
 
-{% extends "prelogin-layout.html" %}
+{% extends "postlogin-layout.html" %}
 
-{% block metadata %}
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dashboard</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='styles/default.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='styles/dashstylesheet.css') }}">
+{% block title %}<title>Dashboard</title>{% endblock %}
+
+{% block style %}
+<style>
+    .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+    }
+
+    @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+            font-size: 3.5rem;
+        }
+    }
+</style>
+
+<!-- Custom styles for this template -->
+<link href="{{ url_for('static', filename='styles/dashboard.css') }}" rel="stylesheet">
 {% endblock %}
 
+
 {% block content %}
-<div id=header>
-  <h1>POLICE DEPARTMENT</h1>
-</div>
-<div id=container>
-  <div id=nav>
-	<center>
-
-	<!-- Only change the 'This is navigation' to the name of the feature -->
-
-	  <a href='{{ url_for('dashboard') }}'>Dashboard</a>
-	  <a href='{{ url_for('showcriminals') }}'>Criminals</a>
-	  <a href=''>Navigation</a>
-	</center>
-  </div>
-  <div id=info>
-	  		<!-- Change this if needed -->
-			<center><h3>Crime Report</h3></center>
-
-			<!-- Only add html code here after removing the placeholder text
-
-			<p>This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text. This is placeholder Text.
-			</p>-->
-  </div>
-</div>
+<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+    <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{{ url_for('dashboard') }}">
+                    <span data-feather="home"></span>
+                    Crime Report
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('showcriminals') }}">
+                    <span data-feather="file"></span>
+                    Criminals
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <span data-feather="shopping-cart"></span>
+                    Products
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <span data-feather="users"></span>
+                    Customers
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <span data-feather="bar-chart-2"></span>
+                    Reports
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <span data-feather="layers"></span>
+                    Integrations
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Crime Report</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+                <span data-feather="calendar"></span>
+                This week
+            </button>
+        </div>
+    </div>
+    <h2>Section title</h2>
+</main>
 {% endblock %}

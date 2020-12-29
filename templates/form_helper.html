@@ -1,41 +1,42 @@
 <!-- This is basically a python function to make reusable code -->
 <!-- See the other html files to see usage -->
 {% macro displayField(fieldName, placeholderValue) %}
-<label>{{ placeholderValue }}:</label><br>
 {{ fieldName(class='form-control',placeholder=placeholderValue,
     **kwargs) }}
 {% if fieldName.errors|length != 0 %}
-    <ul>
-        {% for error in fieldName.errors %}
-                <li>{{ error }}</li>
-        {% endfor %}
-    </ul>
+<ul>
+    {% for error in fieldName.errors %}
+    <li>{{ error }}</li>
+    {% endfor %}
+</ul>
 {% endif %}
 {% endmacro %}
 
 {% macro displayTable(data, head) %}
-<table>
+<thead>
     <tr>
         {% for meta in head %}
         <th>{{ meta }}</th>
         {% endfor %}
     </tr>
+</thead>
+<tbody>
     {% for row in data %}
     <tr>
         {% for meta in head %}
-            <td>
+        <td>
             {% if meta == 'Photo' %}
-                {% if row[meta] != None %}
-                    <img src= "{{ url_for('static', filename='criminal_images/'+row[meta]) }}" style='width: 120px; height:120px' />
-                {% else %}
-                    <img src= "../static/criminal_images/default_photo.jpg" style='width: 120px; height:120px' />
-                {% endif %}
+            {% if row[meta] != None %}
+            <img class='img-rounded' src="{{ url_for('static', filename='criminal_images/'+row[meta]) }}" style='width: 120px; height:120px' />
             {% else %}
-                {{ row[meta] }}
+            <img class='img-rounded' src="../static/criminal_images/default_photo.jpg" style='width: 120px; height:120px' />
             {% endif %}
-            </td>
+            {% else %}
+            {{ row[meta] }}
+            {% endif %}
+        </td>
         {% endfor %}
     </tr>
     {% endfor %}
-</table>
+</tbody>
 {% endmacro %}
