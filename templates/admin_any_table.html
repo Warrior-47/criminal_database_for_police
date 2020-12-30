@@ -2,7 +2,7 @@
 
 {% extends "postlogin-layout.html" %}
 
-{% block title %}<title>Dashboard</title>{% endblock %}
+{% block title %}<title>Dashboard - Admin</title>{% endblock %}
 
 {% block style %}
 <style>
@@ -31,51 +31,38 @@
 <link href="{{ url_for('static', filename='styles/dashboard.css') }}" rel="stylesheet">
 {% endblock %}
 
-
 {% block content %}
 <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
     <div class="position-sticky pt-3">
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link" href="{{url_for('display_profile')}}">
+                <a class="nav-link" href="{{url_for('admin_dashboard')}}">
                     <span data-feather="users"></span>
                     Profile
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="{{ url_for('dashboard') }}">
+                <a class="nav-link active" aria-current="page" href="{{ url_for('Table') }}">
                     <span data-feather="home"></span>
-                    Crime Report
+                    Show Tables
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('showcriminals') }}">
+                <a class="nav-link" href="{{ url_for('validate') }}">
                     <span data-feather="file"></span>
-                    Criminals
+                    Security Clearance
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="{{ url_for('Attr') }}">
                     <span data-feather="shopping-cart"></span>
-                    Products
+                    Create New Table
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="{{ url_for('AddColumn') }}">
                     <span data-feather="users"></span>
-                    Customers
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">
-                    <span data-feather="bar-chart-2"></span>
-                    Reports
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">
-                    <span data-feather="layers"></span>
-                    Integrations
+                    Create New Column
                 </a>
             </li>
         </ul>
@@ -83,14 +70,29 @@
 </nav>
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Crime Report</h1>
-        <div class="btn-toolbar mb-2 mb-md-0">
-            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                <span data-feather="calendar"></span>
-                This week
-            </button>
-        </div>
+        <h1 class="h2">All Table Information</h1>
     </div>
-    <h3>Section title</h3>
+    {% if c==1 %}
+    <h3>No Table Selected</h3>
+    <div id=center>
+        <form class="form-group" action="{{ url_for('Table') }}" , method="POST">
+            <label for="T_name" class="col-form-label-lg">Choose Table:</label><br>
+            {{ form.T_name(class='form-control') }}
+            <br>
+            {{ form.submit_button(class='btn btn-outline-dark') }}
+            <br>
+            {{ form.csrf_token }}
+        </form>
+    </div>
+    {% else %}
+    <h3>{{ tn }}</h3>
+    <div class="table-responsive">
+        <table class="table table-striped table-sm table-hover">
+            {{ displayTable(data,head) }}
+        </table>
+    </div>
+    {% endif %}
+
+
 </main>
 {% endblock %}

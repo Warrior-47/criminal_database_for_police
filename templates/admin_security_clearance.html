@@ -1,0 +1,132 @@
+{% from 'form_helper.html' import displayField, displayTable %}
+
+{% extends "postlogin-layout.html" %}
+
+{% block title %}<title>Dashboard - Admin</title>{% endblock %}
+
+{% block style %}
+<style>
+    .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+    }
+
+    @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+            font-size: 3.5rem;
+        }
+    }
+
+    td,
+    th {
+        text-align: center;
+        vertical-align: middle;
+    }
+</style>
+
+<!-- Custom styles for this template -->
+<link href="{{ url_for('static', filename='styles/dashboard.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+    <div class="position-sticky pt-3">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{{url_for('admin_dashboard')}}">
+                    <span data-feather="users"></span>
+                    Profile
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="{{ url_for('Table') }}">
+                    <span data-feather="home"></span>
+                    Show Tables
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="{{ url_for('validate') }}">
+                    <span data-feather="file"></span>
+                    Security Clearance
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('Attr') }}">
+                    <span data-feather="shopping-cart"></span>
+                    Create New Table
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('AddColumn') }}">
+                    <span data-feather="users"></span>
+                    Create New Column
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Security Clearance</h1>
+        <div class="btn-group me-4 w-25">
+            <button id="btnGroupDrop1" type="button" class="btn btn-md btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Search
+            </button>
+            <form class="dropdown-menu p-1" action="{{ url_for('validate') }}" , method="POST">
+                {{ form.hidden_tag() }}
+                <div class="m-1">
+                    <label for='off' class="form-label">Officer ID:</label>
+                    {{ displayField(form.Off,'Officer ID',autocomplete='off') }}
+                </div>
+                <div class="m-1">
+                    <label for='Cas' class="form-label">Case No:</label>
+                    {{ displayField(form.Cas,'Enter Case Number',autocomplete='off') }}
+                </div>
+                {{ form.submit_button(value='Search', class='btn btn-primary') }}
+            </form>
+            <button id="btnGroupDrop1" type="button" class="btn btn-md btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Clearance
+            </button>
+            <form class="dropdown-menu p-1" action="{{ url_for('validate') }}" , method="POST">
+                {{ form.hidden_tag() }}
+                <div class="m-1">
+                    <label for='Officer_id' class="form-label">Officer ID:</label>
+                    {{ displayField(form.Officer_id,'Officer ID',autocomplete='off') }}
+                </div>
+                <div class="m-1">
+                    <label for='Clearance' class="form-label">Clearance:</label>
+                    {{ form.Clearance(class='form-select form-select-sm') }}
+                </div>
+                {{ form.submit_button(value='Update', class='btn btn-primary') }}
+            </form>
+        </div>
+    </div>
+    <div class="table-responsive my-4 px-2">
+        {% if flag %}
+        <h3>Officer Information:</h3><br>
+        <table class="table table-striped table-sm table-hover">
+            {{ displayTable(data1, head1) }}
+        </table><br>
+        <h3>Crime Information:</h3><br>
+        <table class="table table-striped table-sm table-hover">
+            {{ displayTable(data2, head2) }}
+        </table>
+        {% else %}
+        <table class="table table-striped table-sm table-hover">
+            {{ displayTable(data,head) }}
+        </table>
+        {% endif %}
+    </div>
+</main>
+
+
+
+
+
+
+
+
+{% endblock %}

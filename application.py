@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_login import LoginManager, login_user, current_user, logout_user
+from sqlalchemy import DDL
 from werkzeug.utils import secure_filename
 from flask_caching import Cache
 
@@ -19,6 +20,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_POOL_SIZE'] = 10
 app.config['SQLALCHEMY_MAX_OVERFLOW'] = 15
 app.config['SQLALCHEMY_POOL_RECYCLE'] = 10
+app.config['SQLALCHEMY_ECHO'] = False
 
 db = SQLAlchemy(app)   # Creating the database object
 
@@ -28,10 +30,10 @@ log_in.init_app(app)
 
 @log_in.user_loader
 def load_user(username):
-    user = 'user_{}'.format(username)
+    user = 'user_{0}_{1}'.format(username[0], username[1])
     obj = pickle.loads(cache.get(user)) if cache.get(user) else None
     if obj is None:
-        query = Users.query.filter_by(Username=username).first()
+        query = Users.query.filter_by(Username=username[0]).first()
         obj = pickle.dumps(query)
         cache.set(user, obj, timeout=3600)
         db.session.close()
@@ -77,6 +79,7 @@ def index():
         db.session.add(officer)
         db.session.commit()
         db.session.close()
+
         flash('Registered successfully. Please Login.', 'success')
         # Taking the user to login page when successfully registered.
         return redirect(url_for('Login'))
@@ -92,6 +95,10 @@ def Login():
 
     # Checking if the user is logged in or not. If so, redirecting to dashboard
     if current_user.is_authenticated:
+        print('asche')
+        if current_user.get_id()[1]:
+            return redirect(url_for('admin_dashboard'))
+
         return redirect(url_for('dashboard'))
 
     # Checks if the username and the corresponding passwords exists in the database
@@ -99,8 +106,9 @@ def Login():
 
         user_obj = Users.query.filter_by(Username=login_form.username.data).first()
         login_user(user_obj)
+        if user_obj.privilege:
+            return redirect(url_for('admin_dashboard'))
 
-        """ Shows the dashboard after successful login """
         return redirect(url_for('dashboard'))
 
     # The html page to load when going to '127.0.0.1:port/login'
@@ -114,12 +122,57 @@ def logout():
     if not current_user.is_authenticated:
         return redirect(url_for('Login'))
 
-    user = 'user_{}'.format(current_user.get_id())
+    user = 'user_{}'.format(current_user.get_id()[0])
     cache.delete(user)
     logout_user()
 
     flash('Logged Out Successfully', 'success')
     return redirect(url_for('Login'))
+
+
+@app.route('/admin-dashboard', methods=['GET', 'POST'])
+def admin_dashboard():
+    curr_user = current_user.get_id()
+    if not current_user.is_authenticated or not curr_user[1]:
+        if curr_user is None or curr_user[1]:
+            flash('Please Login first', 'danger')
+        return redirect(url_for('Login'))
+
+    dp = ProfileForm()
+    if dp.validate_on_submit():
+        Name = dp.fullname.data
+        sex = dp.sex.data
+        personal_email = dp.personal_email.data
+        department_email = dp.department_email.data
+        phone_number = dp.phone_number.data
+        nid = dp.national_id_card_number.data
+        rank = dp.rank.data
+        station = dp.station.data
+
+        user = Users.query.filter_by(Username=curr_user[0]).first()
+        police = police_officers.query.filter_by(Username=curr_user[0]).first()
+
+        user.Name = Name
+        user.Gender = sex[0]
+        user.Personal_email = personal_email
+        user.Department_email = department_email
+        user.Phone_No = phone_number
+        user.NID_No = nid
+
+        police.Rank = rank
+        police.Station = station
+
+        db.session.merge(user)
+        db.session.merge(police)
+        db.session.commit()
+
+    stmt = "SELECT users.Name, users.NID_No, users.Gender, users.Phone_No, users.Personal_email, users.Department_email, police_officers.Officer_id, police_officers.Rank, police_officers.Station, users.privilege FROM users, police_officers where users.Username=police_officers.Username AND users.Username= \'"+curr_user[0] + \
+        "'"
+    data = db.session.execute(stmt).fetchone()
+    db.session.close()
+
+    # The html page to load when going to '127.0.0.1:port/dashboard'
+    return render_template('admin-dashboard.html', form_dp=dp, data=data)
 
 
 # login Method is called when '127.0.0.1:port/dashboard' this url is used.
@@ -202,7 +255,6 @@ def insert_criminal():
             db.session.commit()
             db.session.close()
         flash('Insert Successful', 'success')
-        return redirect(url_for('showcriminals'))
 
     return redirect(url_for('showcriminals'))
 
@@ -232,9 +284,9 @@ def display_profile():
         sex = dp.sex.data
         personal_email = dp.personal_email.data
         phone_number = dp.phone_number.data
-        nid = dp.national_id_card_number.data
 
-        user = Users.query.filter_by(Username=current_user.get_id()).first()
+        user = Users.query.filter_by(Username=current_user.get_id()[0]).first()
+
         user.Name = Name
         user.Gender = sex[0]
         user.Personal_email = personal_email
@@ -242,13 +294,162 @@ def display_profile():
 
         db.session.merge(user)
         db.session.commit()
-        db.session.close()
 
-    stmt = "SELECT users.Name, users.NID_No, users.Gender, users.Phone_No, users.Personal_email, users.Department_email, police_officers.Officer_id, police_officers.Rank, police_officers.Station FROM users, police_officers where users.Username=police_officers.Username AND users.Username= \'"+current_user.get_id() + \
+    stmt = "SELECT users.Name, users.NID_No, users.Gender, users.Phone_No, users.Personal_email, users.Department_email, police_officers.Officer_id, police_officers.Rank, police_officers.Station, users.privilege FROM users, police_officers where users.Username=police_officers.Username AND users.Username= \'"+current_user.get_id()[0] + \
         "'"
     data = db.session.execute(stmt).fetchone()
     db.session.close()
+
     return render_template('dashboard-profile.html', form_dp=dp, data=data)
+
+
+@app.route('/validate', methods=['GET', 'POST'])
+def validate():
+    clr_form = SecurityForm()
+    if clr_form.validate_on_submit():
+        Officer_id = clr_form.Officer_id.data
+        Clearance = clr_form.Clearance.data
+        security_obj = police_officers.query.filter_by(Officer_id=Officer_id).first()
+        if security_obj:
+            security_obj.Clearance = Clearance
+            db.session.merge(security_obj)
+            db.session.commit()
+            stmt = 'Select * from police_officers'
+            crims = db.session.execute(stmt).fetchall()
+            return redirect(url_for('validate'))
+
+    stmt1 = 'SELECT * from police_officers'
+    stmt2 = 'select * from crime'
+    pol = db.session.execute(stmt1).fetchall()
+    crim = db.session.execute(stmt2).fetchall()
+    Off = clr_form.Off.data
+    Cas = clr_form.Cas.data
+    o1_obj = police_officers.query.filter_by(Officer_id=Off).first()
+    p1_obj = crime.query.filter_by(Case_No=Cas).first()
+    if o1_obj or p1_obj:
+        if o1_obj:
+            return redirect(url_for('Search', keys1=Off))
+        elif p1_obj:
+            return redirect(url_for('Search', keys1=Cas))
+
+    return render_template("admin_security_clearance.html", flag=True, form=clr_form, data1=pol, head1=pol[0].keys(), data2=crim, head2=crim[0].keys())
+
+
+@app.route('/search/<keys1>', methods=['GET', 'POST'])
+def Search(keys1):
+    clr_form = SecurityForm()
+    o1_obj = police_officers.query.filter_by(Officer_id=keys1).first()
+    p1_obj = crime.query.filter_by(Case_No=keys1).first()
+    if o1_obj:
+        stmt1 = 'Select o.Username,o.Officer_id,o.Station,o.Rank,o.Clearance from Users u, police_officers o where o.Username = u.Username and o.officer_id = "'+keys1+'"'
+        pol1 = db.session.execute(stmt1).fetchall()
+        return render_template('admin_security_clearance.html', form=clr_form, data=pol1, head=pol1[0].keys(), flag=False)
+    elif p1_obj:
+        stmt2 = 'Select c.Case_No,i.Officer_id  AS Investigated_By , co.Criminal_id,cr.Name AS Criminal_Name,c.Crime_date,c.End_date,c.Address,c.Clearance from  investigate_by i ,crime c, criminal cr, Committed_by co where c.Case_No = co.Case_No AND cr.Criminal_id = co.Criminal_id AND i.Case_No = co.Case_No AND c.Case_No = "'+keys1+'"'
+        crim2 = db.session.execute(stmt2).fetchall()
+        return render_template('admin_security_clearance.html', form=clr_form, data=crim2, head=crim2[0].keys(), flag=False)
+    return render_template("admin_security_clearance.html", form=clr_form)
+
+
+@app.route('/show1', methods=['GET', 'POST'])
+def Table():
+    tb_form = InformationForm()
+    if tb_form.validate_on_submit():
+        s = tb_form.T_name.data
+        if s == 'Officer Information':
+            # return render_template("present.html", query=Users.query.all(),form=tb_form,c=1)
+            stmt = 'Select o.Username,u.Name,o.Officer_id,u.NID_No,u.Gender,u.Phone_No,u.Personal_email,u.Department_email,o.Station,o.Rank,o.Clearance from Users u, police_officers o where u.username = o.username'
+            crims = db.session.execute(stmt).fetchall()
+            return render_template('admin_any_table.html', tn=s, data=crims, head=crims[0].keys(), c=2)
+        elif s == 'Crime Report':
+            stmt = 'Select c.Case_No,i.Officer_id  AS Investigated_By , co.Criminal_id,cr.Name AS Criminal_Name,c.Crime_date,c.End_date,c.Address,c.Clearance from  investigate_by i ,crime c, criminal cr, Committed_by co where c.Case_No = co.Case_No AND cr.Criminal_id = co.Criminal_id AND i.Case_No = co.Case_No'
+            crims = db.session.execute(stmt).fetchall()
+            return render_template('admin_any_table.html', tn=s, data=crims, head=crims[0].keys(), c=2)
+        elif s == "Criminal Report":
+            stmt = 'Select c.Photo, c.Criminal_id,c.Name,c.Age,c.Nationality,c.Nid_No,c.Motive,c.Phone_No,c.Address,cr.Remark from criminal c left join Criminal_Remarks cr on c.Criminal_id = cr.Criminal_id'
+            crims = db.session.execute(stmt).fetchall()
+            return render_template('admin_any_table.html', tn=s, data=crims, head=crims[0].keys(), c=2)
+        elif s == 'Medical Team':
+            stmt = 'Select * from medical_history'
+            crims = db.session.execute(stmt).fetchall()
+            return render_template('admin_any_table.html', tn=s, data=crims, head=crims[0].keys(), c=2)
+
+    return render_template('admin_any_table.html', c=1, form=tb_form)
+
+
+@app.route('/Attr', methods=['GET', 'POST'])
+def Attr():
+    at_form = AttributeForm()
+
+    return render_template('admin_create_table.html', c=1, form=at_form)
+
+
+@app.route('/CreateTable', methods=['GET', 'POST'])
+def CreateTable():
+    at_form = AttributeForm()
+
+    num = at_form.Attr.data
+    p = db.engine.table_names()
+
+    if request.method == "POST":
+        name = request.form.get('name')
+        column_names = request.form.getlist('at')
+        column_types = request.form.getlist('op')
+        column_len = request.form.getlist('ta')
+        if name and name.lower() in p:
+            flash("Table Exists. Try Again", 'danger')
+            '''  Have to fixed Flash '''
+            return render_template('admin_create_table.html', c=1, form=at_form)
+
+        if num is None:
+            """table create"""
+
+            stmt = f'Create Table {name} ( Case_No INT, '
+            for index, (name, type, length) in enumerate(zip(column_names, column_types, column_len)):
+                if type == 'VARCHAR':
+                    stmt += name + ' ' + type + \
+                        f'({length}),' if index < len(column_names) - \
+                        1 else name + ' ' + type + f'({length})'
+                else:
+                    stmt += name + ' ' + type + \
+                        ',' if index < len(column_names) - 1 else name + ' ' + type
+            stmt += " , FOREIGN KEY(Case_No) REFERENCES Crime(Case_No) ON UPDATE CASCADE ON DELETE CASCADE" + ');'
+
+            db.session.execute(stmt)
+            db.session.commit()
+
+            return redirect(url_for('Attr'))
+
+        return render_template('admin_create_table.html', num=num, c=2, form=at_form)
+    return redirect(url_for('Attr'))
+
+
+@app.route('/AddColumn', methods=['GET', 'POST'])
+def AddColumn():
+    all_table = db.engine.table_names()
+    Tname = request.form.get('name')
+    column_name = request.form.get('at')
+    column_type = request.form.get('op')
+    column_len = request.form.get('ta')
+
+    if Tname in all_table:
+        # findimg all meta data of a table
+        stmt2 = "Select * from "+Tname
+        crim2 = db.session.execute(stmt2).fetchall()
+        column = (crim2[0].keys())
+        all_column = [item.lower() for item in column]
+
+        if (column_name.lower()) in all_column:
+            flash("Column Exists. Try Again", 'danger')
+        else:
+            stmt = "ALTER TABLE " + Tname + " ADD " + column_name + \
+                " " + column_type + "(" + column_len + ");"
+            add_column = DDL(stmt)
+            db.engine.execute(add_column)
+            flash("Column Added.", 'success')
+    else:
+        flash("Table Doesnot Exist. Try Again", 'danger')
+    return render_template('admin_addcolumn.html')
 
 
 @app.teardown_appcontext

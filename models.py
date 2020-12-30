@@ -11,8 +11,6 @@ class Users(UserMixin, db.Model):
     Username = db.Column(db.String(128), primary_key=True,
                          unique=True, nullable=False)
 
-    def get_id(self):
-        return self.Username
     Name = db.Column(db.String(128), unique=True,
                      nullable=False)
     NID_No = db.Column(db.String(10), unique=True, nullable=True)
@@ -26,6 +24,9 @@ class Users(UserMixin, db.Model):
     privilege = db.Column(db.SmallInteger(), nullable=False)
 
     police = db.relationship("police_officers", backref="Users", uselist=False)
+
+    def get_id(self):
+        return self.Username, self.privilege
 
 
 class police_officers(db.Model):

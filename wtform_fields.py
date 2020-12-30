@@ -118,3 +118,25 @@ class SearchForm(FlaskForm):
     """
     query = StringField('query_label', validators=[InputRequired()])
     search = SubmitField('Search')
+
+
+class SecurityForm(FlaskForm):
+    choice = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    Off = StringField('Offier_id_label')
+    Cas = StringField('Case_No_label')
+    Officer_id = StringField('Offier_id_label')
+    Clearance = SelectField(u'Choose', choices=choice)
+    submit_button = SubmitField()
+
+
+class InformationForm(FlaskForm):
+    choice = ['Choose One', 'Officer Information',
+              'Crime Report', 'Criminal Report', 'Medical Team']
+
+    T_name = SelectField(u'Choose', choices=choice)
+    submit_button = SubmitField('Click Here')
+
+
+class AttributeForm(FlaskForm):
+    Attr = IntegerField('Attr_label', validators=[InputRequired(message="InputRequired")])
+    submit_button = SubmitField('Click Here')
