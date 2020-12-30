@@ -21,6 +21,22 @@ def validate_credentials(form, field):
         raise ValidationError("Username or Password do not match.")
 
 
+class ProfileForm(FlaskForm):
+
+    choice = ['Male', 'Female']
+
+    fullname = StringField('fullname_label')
+    sex = SelectField(u'Choose', choices=choice)
+    personal_email = StringField('personal_email_label', validators=[Email('Not a valid email')])
+    department_email = StringField('department_email_label')
+    phone_number = StringField('phone_number_label')
+    national_id_card_number = IntegerField('national_id_card_number_label')
+    rank = StringField('rank_label')
+    station = StringField('station_label')
+    officer_id = StringField('officer_id_label')
+    update_button = SubmitField('Update')
+
+
 class RegistrationForm(FlaskForm):
     """
     This the where all the info from the Registration_Page gets store in.

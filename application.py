@@ -2,13 +2,14 @@ from datetime import datetime
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_login import LoginManager, login_user, current_user, logout_user
 from werkzeug.utils import secure_filename
+from flask_caching import Cache
 
 from wtform_fields import *
 from models import *
-from extensions import cache
 import pickle
 
 app = Flask(__name__)  # Creating the server app
+cache = Cache()
 cache.init_app(app, config={'CACHE_TYPE': 'simple'})
 app.secret_key = 'replace later'
 
@@ -18,6 +19,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_POOL_SIZE'] = 10
 app.config['SQLALCHEMY_MAX_OVERFLOW'] = 15
 app.config['SQLALCHEMY_POOL_RECYCLE'] = 10
+
 db = SQLAlchemy(app)   # Creating the database object
 
 log_in = LoginManager(app)   # Configuring flask-login
@@ -115,6 +117,7 @@ def logout():
     user = 'user_{}'.format(current_user.get_id())
     cache.delete(user)
     logout_user()
+
     flash('Logged Out Successfully', 'success')
     return redirect(url_for('Login'))
 
@@ -221,6 +224,33 @@ def query():
     return redirect(url_for('showcriminals'))
 
 
+@app.route('/dashboard/profile', methods=['GET', 'POST'])
+def display_profile():
+    dp = ProfileForm()
+    if dp.validate_on_submit():
+        Name = dp.fullname.data
+        sex = dp.sex.data
+        personal_email = dp.personal_email.data
+        phone_number = dp.phone_number.data
+        nid = dp.national_id_card_number.data
+
+        user = Users.query.filter_by(Username=current_user.get_id()).first()
+        user.Name = Name
+        user.Gender = sex[0]
+        user.Personal_email = personal_email
+        user.Phone_No = phone_number
+
+        db.session.merge(user)
+        db.session.commit()
+        db.session.close()
+
+    stmt = "SELECT users.Name, users.NID_No, users.Gender, users.Phone_No, users.Personal_email, users.Department_email, police_officers.Officer_id, police_officers.Rank, police_officers.Station FROM users, police_officers where users.Username=police_officers.Username AND users.Username= \'"+current_user.get_id() + \
+        "'"
+    data = db.session.execute(stmt).fetchone()
+    db.session.close()
+    return render_template('dashboard-profile.html', form_dp=dp, data=data)
+
+
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     db.session.remove()
@@ -228,4 +258,4 @@ def shutdown_session(exception=None):
 
 
 if __name__ == "__main__":
-    app.run(debug=False)   # Running the server with Debug mode on
+    app.run(debug=True)   # Running the server with Debug mode on

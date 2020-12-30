@@ -19,6 +19,12 @@
             font-size: 3.5rem;
         }
     }
+
+    td,
+    th {
+        text-align: center;
+        vertical-align: middle;
+    }
 </style>
 
 <!-- Custom styles for this template -->
@@ -31,13 +37,13 @@
     <div class="position-sticky pt-3">
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link" href="{{url_for('display_profile')}}">
+                <a class="nav-link active" href="{{url_for('display_profile')}}">
                     <span data-feather="users"></span>
                     Profile
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="{{ url_for('dashboard') }}">
+                <a class="nav-link" aria-current="page" href="{{ url_for('dashboard') }}">
                     <span data-feather="home"></span>
                     Crime Report
                 </a>
@@ -77,14 +83,29 @@
 </nav>
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Crime Report</h1>
-        <div class="btn-toolbar mb-2 mb-md-0">
-            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                <span data-feather="calendar"></span>
-                This week
-            </button>
-        </div>
+        <h1 class="h2">Profile</h1>
     </div>
-    <h2>Section title</h2>
+    <form class="form-inline" action="" method="POST">
+        {{ form_dp.hidden_tag() }}
+        <label>Name: </label>
+        {{ displayField(form_dp.fullname,'Full Name',value=data['Name'], autocomplete='off')}} <br>
+        <label>Sex: </label>
+        {{ displayField(form_dp.sex,'Sex',value=data['Gender'], autocomplete='off')}} <br>
+        <label>Personal Email: </label>
+        {{ displayField(form_dp.personal_email,'Personal Email',value=data['Personal_email'], autocomplete='off')}} <br>
+        <label>Department Email: </label>
+        {{ displayField(form_dp.department_email,'Department Email',value=data['Department_email'], disabled=True, autocomplete='off')}} <br>
+        <label>Contact Number: </label>
+        {{ displayField(form_dp.phone_number,'Phone Number',value=data['Phone_No'], autocomplete='off')}} <br>
+        <label>National ID Card Number: </label>
+        {{ displayField(form_dp.national_id_card_number,'NID',value=data['NID_No'],disabled=True, autocomplete='off')}} <br>
+        <label>Rank: </label>
+        {{ displayField(form_dp.rank,'Rank',value=data['Rank'],disabled=True, autocomplete='off')}} <br>
+        <label>Station: </label>
+        {{ displayField(form_dp.station,'Station', value=data['Station'], disabled=True, autocomplete='off')}} <br>
+        <label>Officer ID: </label>
+        {{ displayField(form_dp.officer_id,'Officer ID', value=data['Officer_id'],disabled=True, autocomplete='off')}} <br>
+        {{ form_dp.update_button(class='btn btn-outline-dark mb-2') }}
+    </form>
 </main>
 {% endblock %}
