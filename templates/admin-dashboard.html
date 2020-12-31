@@ -84,31 +84,31 @@
     <br>
     <form class="form-inline" action="{{ url_for('admin_dashboard') }}" method="POST">
         {{ form_dp.hidden_tag() }}
-        <label>Name: </label>
+        <label class="col-form-label-lg">Name: </label>
         {{ displayField(form_dp.fullname,'Full Name',value=data['Name'], autocomplete='off')}} <br>
-        <label>Sex: </label>
-        {{ displayField(form_dp.sex,'Sex',value=data['Gender'], autocomplete='off')}} <br>
-        <label>Personal Email: </label>
+        <label class="col-form-label-lg">Sex: </label>
+        {{ form_dp.sex(class="form-select", value=data['Gender'], autocomplete='off') }}<br>
+        <label class="col-form-label-lg">Personal Email: </label>
         {{ displayField(form_dp.personal_email,'Personal Email',value=data['Personal_email'], autocomplete='off')}} <br>
-        <label>Department Email: </label>
+        <label class="col-form-label-lg">Department Email: </label>
         {{ displayField(form_dp.department_email,'Department Email',value=data['Department_email'], autocomplete='off')}} <br>
-        <label>Contact Number: </label>
+        <label class="col-form-label-lg">Contact Number: </label>
         {{ displayField(form_dp.phone_number,'Phone Number',value=data['Phone_No'], autocomplete='off')}} <br>
-        <label>National ID Card Number: </label>
+        <label class="col-form-label-lg">National ID Card Number: </label>
         {{ displayField(form_dp.national_id_card_number,'NID',value=data['NID_No'], autocomplete='off')}} <br>
-        <label>Rank: </label>
+        <label class="col-form-label-lg">Rank: </label>
         {{ displayField(form_dp.rank,'Rank',value=data['Rank'], autocomplete='off')}} <br>
-        <label>Station: </label>
+        <label class="col-form-label-lg">Station: </label>
         {{ displayField(form_dp.station,'Station', value=data['Station'], autocomplete='off')}} <br>
-        <label>Officer ID: </label>
+        <label class="col-form-label-lg">Officer ID: </label>
         {{ displayField(form_dp.officer_id,'Officer ID', value=data['Officer_id'], autocomplete='off', disabled=True)}} <br>
-        <label>Old Password: </label>
+        <label class="col-form-label-lg">Old Password: </label>
         {{ displayField(form_dp.old_password,'Old Password', autocomplete='off')}} <br>
-        <label>New Password: </label>
+        <label class="col-form-label-lg">New Password: </label>
         {{ displayField(form_dp.new_password,'New Password', autocomplete='off')}} <br>
-        <label>Confirm Password: </label>
+        <label class="col-form-label-lg">Confirm Password: </label>
         {{ displayField(form_dp.confirm_pswd,'Confirm Password', autocomplete='off')}} <br>
-        {{ form_dp.update_button(class='btn btn-outline-dark mb-2') }}
+        {{ form_dp.update_button(class='btn btn-outline-dark mb-3') }}
     </form>
 </main>
 {% endblock %}
