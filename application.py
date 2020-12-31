@@ -467,8 +467,12 @@ def AddColumn():
                 flash("Column Exists. Try Again", 'danger')
                 return redirect(url_for('AddColumn'))
             else:
-                stmt = "ALTER TABLE " + Tname + " ADD " + column_name + \
-                    " " + column_type + "(" + column_len + ");"
+                if column_type == "DATE":
+                    stmt = "ALTER TABLE " + Tname + " ADD " + column_name + \
+                        " " + column_type + "(" + column_len + ");"
+                else:
+                    stmt = "ALTER TABLE " + Tname + " ADD " + column_name + \
+                        " " + column_type + ";"
                 add_column = DDL(stmt)
                 db.engine.execute(add_column)
                 flash("Column Added.", 'success')
