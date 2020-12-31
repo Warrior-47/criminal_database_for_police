@@ -148,9 +148,15 @@ def admin_dashboard():
         nid = dp.national_id_card_number.data
         rank = dp.rank.data
         station = dp.station.data
+        old_pass = dp.old_password.data
+        new_pass = dp.new_password.data
 
         user = Users.query.filter_by(Username=curr_user[0]).first()
         police = police_officers.query.filter_by(Username=curr_user[0]).first()
+
+        if not pbkdf2_sha256.verify(old_pass, user.Pass):
+            flash("Password did not Match", "danger")
+            return redirect(url_for('admin_dashboard'))
 
         user.Name = Name
         user.Gender = sex[0]
@@ -159,12 +165,18 @@ def admin_dashboard():
         user.Phone_No = phone_number
         user.NID_No = nid
 
+        if new_pass != '':
+            hashed_pass = pbkdf2_sha256.hash(new_pass)
+            user.Pass = hashed_pass
+
         police.Rank = rank
         police.Station = station
 
         db.session.merge(user)
         db.session.merge(police)
         db.session.commit()
+
+        flash('Updated Successfully', 'success')
 
     stmt = "SELECT users.Name, users.NID_No, users.Gender, users.Phone_No, users.Personal_email, users.Department_email, police_officers.Officer_id, police_officers.Rank, police_officers.Station, users.privilege FROM users, police_officers where users.Username=police_officers.Username AND users.Username= \'"+curr_user[0] + \
         "'"
@@ -284,18 +296,30 @@ def display_profile():
         sex = dp.sex.data
         personal_email = dp.personal_email.data
         phone_number = dp.phone_number.data
+        old_pass = dp.old_password.data
+        new_pass = dp.new_password.data
 
         user = Users.query.filter_by(Username=current_user.get_id()[0]).first()
+
+        if not pbkdf2_sha256.verify(old_pass, user.Pass):
+            flash("Password did not Match", "danger")
+            return redirect(url_for('display_profile'))
 
         user.Name = Name
         user.Gender = sex[0]
         user.Personal_email = personal_email
         user.Phone_No = phone_number
 
+        if new_pass != '':
+            hashed_pass = pbkdf2_sha256.hash(new_pass)
+            user.Pass = hashed_pass
+
         db.session.merge(user)
         db.session.commit()
 
-    stmt = "SELECT users.Name, users.NID_No, users.Gender, users.Phone_No, users.Personal_email, users.Department_email, police_officers.Officer_id, police_officers.Rank, police_officers.Station, users.privilege FROM users, police_officers where users.Username=police_officers.Username AND users.Username= \'"+current_user.get_id()[0] + \
+        flash('Updated Successfully', 'success')
+
+    stmt = "SELECT users.Username, users.Name, users.NID_No, users.Gender, users.Phone_No, users.Personal_email, users.Department_email, police_officers.Officer_id, police_officers.Rank, police_officers.Station, users.privilege FROM users, police_officers where users.Username=police_officers.Username AND users.Username= \'"+current_user.get_id()[0] + \
         "'"
     data = db.session.execute(stmt).fetchone()
     db.session.close()
@@ -397,8 +421,7 @@ def CreateTable():
         column_types = request.form.getlist('op')
         column_len = request.form.getlist('ta')
         if name and name.lower() in p:
-            flash("Table Exists. Try Again", 'danger')
-            '''  Have to fixed Flash '''
+            flash("Table Already Exists", 'danger')
             return render_template('admin_create_table.html', c=1, form=at_form)
 
         if num is None:
@@ -417,7 +440,7 @@ def CreateTable():
 
             db.session.execute(stmt)
             db.session.commit()
-
+            flash("Table Created", "success")
             return redirect(url_for('Attr'))
 
         return render_template('admin_create_table.html', num=num, c=2, form=at_form)
@@ -427,28 +450,30 @@ def CreateTable():
 @app.route('/AddColumn', methods=['GET', 'POST'])
 def AddColumn():
     all_table = db.engine.table_names()
-    Tname = request.form.get('name')
-    column_name = request.form.get('at')
-    column_type = request.form.get('op')
-    column_len = request.form.get('ta')
+    if request.method == 'POST':
+        Tname = request.form.get('name')
+        column_name = request.form.get('at')
+        column_type = request.form.get('op')
+        column_len = request.form.get('ta')
 
-    if Tname in all_table:
-        # findimg all meta data of a table
-        stmt2 = "Select * from "+Tname
-        crim2 = db.session.execute(stmt2).fetchall()
-        column = (crim2[0].keys())
-        all_column = [item.lower() for item in column]
+        if Tname in all_table:
+            # findimg all meta data of a table
+            stmt2 = "Select * from "+Tname
+            crim2 = db.session.execute(stmt2).fetchall()
+            column = (crim2[0].keys())
+            all_column = [item.lower() for item in column]
 
-        if (column_name.lower()) in all_column:
-            flash("Column Exists. Try Again", 'danger')
+            if (column_name.lower()) in all_column:
+                flash("Column Exists. Try Again", 'danger')
+            else:
+                stmt = "ALTER TABLE " + Tname + " ADD " + column_name + \
+                    " " + column_type + "(" + column_len + ");"
+                add_column = DDL(stmt)
+                db.engine.execute(add_column)
+                flash("Column Added.", 'success')
         else:
-            stmt = "ALTER TABLE " + Tname + " ADD " + column_name + \
-                " " + column_type + "(" + column_len + ");"
-            add_column = DDL(stmt)
-            db.engine.execute(add_column)
-            flash("Column Added.", 'success')
-    else:
-        flash("Table Doesnot Exist. Try Again", 'danger')
+            flash("Table does not Exist. Try Again", 'danger')
+            return redirect(url_for('AddColumn'))
     return render_template('admin_addcolumn.html')
 
 

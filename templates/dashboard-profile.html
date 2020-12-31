@@ -85,6 +85,16 @@
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h1 class="h2">Profile</h1>
     </div>
+    <center>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+            <strong>{{message}}</strong>
+        </div>
+        {% endfor %}
+        {% endwith %}
+    </center>
+    <br>
     <form class="form-inline" action="{{ url_for('display_profile') }}" method="POST">
         {{ form_dp.hidden_tag() }}
         <label>Name: </label>
@@ -105,6 +115,12 @@
         {{ displayField(form_dp.station,'Station', value=data['Station'], disabled=True, autocomplete='off')}} <br>
         <label>Officer ID: </label>
         {{ displayField(form_dp.officer_id,'Officer ID', value=data['Officer_id'],disabled=True, autocomplete='off')}} <br>
+        <label>Old Password: </label>
+        {{ displayField(form_dp.old_password,'Old Password', autocomplete='off')}} <br>
+        <label>New Password: </label>
+        {{ displayField(form_dp.new_password,'New Password', autocomplete='off')}} <br>
+        <label>Confirm Password: </label>
+        {{ displayField(form_dp.confirm_pswd,'Confirm Password', autocomplete='off')}} <br>
         {{ form_dp.update_button(class='btn btn-outline-dark mb-2') }}
     </form>
 </main>

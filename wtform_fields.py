@@ -34,6 +34,11 @@ class ProfileForm(FlaskForm):
     rank = StringField('rank_label')
     station = StringField('station_label')
     officer_id = StringField('officer_id_label')
+    old_password = PasswordField('password_label', validators=[
+                                 InputRequired(message="Input required")])
+    new_password = PasswordField('password_label')
+    confirm_pswd = PasswordField('confirm_pswd_label', validators=[
+                                 EqualTo('new_password', message='Password doesn\'t match.')])
     update_button = SubmitField('Update')
 
 
