@@ -1,7 +1,7 @@
 from datetime import datetime
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_login import LoginManager, login_user, current_user, logout_user
-from sqlalchemy import DDL
+from sqlalchemy import DDL, MetaData
 from werkzeug.utils import secure_filename
 from flask_caching import Cache
 
@@ -458,8 +458,9 @@ def AddColumn():
 
         if Tname in all_table:
             # findimg all meta data of a table
-            all_column=[]
-            messages = db.Table(Tname, db.metadata,autoload=True, autoload_with=db.engine)
+            all_column = []
+            metadata = MetaData()
+            messages = db.Table(Tname, metadata, autoload=True, autoload_with=db.engine)
             for c in messages.columns:
                 all_column.append(c.name.lower())
             if (column_name.lower()) in all_column:
