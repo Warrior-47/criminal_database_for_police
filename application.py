@@ -458,13 +458,13 @@ def AddColumn():
 
         if Tname in all_table:
             # findimg all meta data of a table
-            stmt2 = "Select * from "+Tname
-            crim2 = db.session.execute(stmt2).fetchall()
-            column = (crim2[0].keys())
-            all_column = [item.lower() for item in column]
-
+            all_column=[]
+            messages = db.Table(Tname, db.metadata,autoload=True, autoload_with=db.engine)
+            for c in messages.columns:
+                all_column.append(c.name.lower())
             if (column_name.lower()) in all_column:
                 flash("Column Exists. Try Again", 'danger')
+                return redirect(url_for('AddColumn'))
             else:
                 stmt = "ALTER TABLE " + Tname + " ADD " + column_name + \
                     " " + column_type + "(" + column_len + ");"
