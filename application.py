@@ -1,7 +1,7 @@
 from datetime import datetime
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_login import LoginManager, login_user, current_user, logout_user
-from sqlalchemy import DDL
+from sqlalchemy import DDL, MetaData
 from werkzeug.utils import secure_filename
 from flask_caching import Cache
 
@@ -458,16 +458,21 @@ def AddColumn():
 
         if Tname in all_table:
             # findimg all meta data of a table
-            stmt2 = "Select * from "+Tname
-            crim2 = db.session.execute(stmt2).fetchall()
-            column = (crim2[0].keys())
-            all_column = [item.lower() for item in column]
-
+            all_column = []
+            metadata = MetaData()
+            messages = db.Table(Tname, metadata, autoload=True, autoload_with=db.engine)
+            for c in messages.columns:
+                all_column.append(c.name.lower())
             if (column_name.lower()) in all_column:
                 flash("Column Exists. Try Again", 'danger')
+                return redirect(url_for('AddColumn'))
             else:
-                stmt = "ALTER TABLE " + Tname + " ADD " + column_name + \
-                    " " + column_type + "(" + column_len + ");"
+                if column_type == "DATE":
+                    stmt = "ALTER TABLE " + Tname + " ADD " + column_name + \
+                        " " + column_type + "(" + column_len + ");"
+                else:
+                    stmt = "ALTER TABLE " + Tname + " ADD " + column_name + \
+                        " " + column_type + ";"
                 add_column = DDL(stmt)
                 db.engine.execute(add_column)
                 flash("Column Added.", 'success')
