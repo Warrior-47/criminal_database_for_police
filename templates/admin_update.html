@@ -30,13 +30,12 @@
 <!-- Custom styles for this template -->
 <link href="{{ url_for('static', filename='styles/dashboard.css') }}" rel="stylesheet">
 {% endblock %}
-
 {% block content %}
 <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
     <div class="position-sticky pt-3">
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link active" href="{{url_for('admin_dashboard')}}">
+                <a class="nav-link" href="{{url_for('admin_dashboard')}}">
                     <span data-feather="users"></span>
                     Profile
                 </a>
@@ -66,7 +65,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link " href="{{ url_for('lookinto') }}">
+                <a class="nav-link active" href="{{ url_for('lookinto') }}">
                     <span data-feather="users"></span>
                     Information Update
                 </a>
@@ -76,7 +75,7 @@
 </nav>
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Profile</h1>
+        <h1 class="h2">Information Update</h1>
     </div>
     <center>
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -88,33 +87,42 @@
         {% endwith %}
     </center>
     <br>
-    <form class="form-inline" action="{{ url_for('admin_dashboard') }}" method="POST">
-        {{ form_dp.hidden_tag() }}
-        <label class="col-form-label-lg">Name: </label>
-        {{ displayField(form_dp.fullname,'Full Name',value=data['Name'], autocomplete='off')}} <br>
-        <label class="col-form-label-lg">Sex: </label>
-        {{ form_dp.sex(class="form-select", value=data['Gender'], autocomplete='off') }}<br>
-        <label class="col-form-label-lg">Personal Email: </label>
-        {{ displayField(form_dp.personal_email,'Personal Email',value=data['Personal_email'], autocomplete='off')}} <br>
-        <label class="col-form-label-lg">Department Email: </label>
-        {{ displayField(form_dp.department_email,'Department Email',value=data['Department_email'], autocomplete='off')}} <br>
-        <label class="col-form-label-lg">Contact Number: </label>
-        {{ displayField(form_dp.phone_number,'Phone Number',value=data['Phone_No'], autocomplete='off')}} <br>
-        <label class="col-form-label-lg">National ID Card Number: </label>
-        {{ displayField(form_dp.national_id_card_number,'NID',value=data['NID_No'], autocomplete='off')}} <br>
-        <label class="col-form-label-lg">Rank: </label>
-        {{ displayField(form_dp.rank,'Rank',value=data['Rank'], autocomplete='off')}} <br>
-        <label class="col-form-label-lg">Station: </label>
-        {{ displayField(form_dp.station,'Station', value=data['Station'], autocomplete='off')}} <br>
-        <label class="col-form-label-lg">Officer ID: </label>
-        {{ displayField(form_dp.officer_id,'Officer ID', value=data['Officer_id'], autocomplete='off', disabled=True)}} <br>
-        <label class="col-form-label-lg">Old Password: </label>
-        {{ displayField(form_dp.old_password,'Old Password', autocomplete='off')}} <br>
-        <label class="col-form-label-lg">New Password: </label>
-        {{ displayField(form_dp.new_password,'New Password', autocomplete='off')}} <br>
-        <label class="col-form-label-lg">Confirm Password: </label>
-        {{ displayField(form_dp.confirm_pswd,'Confirm Password', autocomplete='off')}} <br>
-        {{ form_dp.update_button(class='btn btn-outline-dark mb-3') }}
+    {%if c==1 %}
+    <form class="row row-cols-lg-auto g-3 align-items-center" action="{{ url_for('lookinto') }}" , method="POST">
+        <div class="col-12">
+            <div class="input-group">
+                <label for="username" class="col-form-label-lg me-3">Username:</label>
+                {{ displayField(form.username,'Username',autocomplete='off') }}
+            </div>
+        </div>
+        <div class="col-12">
+            {{ form.submit_button(class='btn btn-outline-dark my-3 btn-md') }}
+        </div>
+        {{ form.csrf_token }}
     </form>
-</main>
-{% endblock %}
+    {% else %}
+        <form class="form-inline" action="{{ url_for('update',key=key) }}" method="POST">
+            {{ form_dp.hidden_tag() }}
+            <label class="col-form-label-lg">Name: </label>
+            {{ displayField(form_dp.fullname,'Full Name',value=data['Name'], autocomplete='off')}} <br>
+            <label class="col-form-label-lg">Sex: </label>
+            {{ form_dp.sex(class="form-select", value=data['Gender'], autocomplete='off') }}<br>
+            <label class="col-form-label-lg">Personal Email: </label>
+            {{ displayField(form_dp.personal_email,'Personal Email',value=data['Personal_email'], autocomplete='off')}} <br>
+            <label class="col-form-label-lg">Department Email: </label>
+            {{ displayField(form_dp.department_email,'Department Email',value=data['Department_email'],autocomplete='off')}} <br>
+            <label class="col-form-label-lg">Contact Number: </label>
+            {{ displayField(form_dp.phone_number,'Phone Number',value=data['Phone_No'], autocomplete='off')}} <br>
+            <label class="col-form-label-lg">National ID Card Number: </label>
+            {{ displayField(form_dp.national_id_card_number,'NID',value=data['NID_No'],autocomplete='off')}} <br>
+            <label class="col-form-label-lg">Rank: </label>
+            {{ displayField(form_dp.rank,'Rank',value=data['Rank'],autocomplete='off')}} <br>
+            <label class="col-form-label-lg">Station: </label>
+            {{ displayField(form_dp.station,'Station', value=data['Station'],autocomplete='off')}} <br>
+            <label class="col-form-label-lg">Officer ID: </label>
+            {{ displayField(form_dp.officer_id,'Officer ID', value=data['Officer_id'],autocomplete='off')}} <br>
+            {{ form_dp.update_button(class='btn btn-outline-dark mb-3') }}
+        </form>
+    {% endif %}
+    </main>
+    {% endblock %}

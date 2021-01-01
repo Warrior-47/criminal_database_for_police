@@ -145,3 +145,26 @@ class InformationForm(FlaskForm):
 class AttributeForm(FlaskForm):
     Attr = IntegerField('Attr_label', validators=[InputRequired(message="InputRequired")])
     submit_button = SubmitField('Click Here')
+
+
+class LookIntoForm(FlaskForm):
+    username = StringField('username_label', validators=[InputRequired(message="InputRequired")])
+    submit_button = SubmitField('Submit')
+
+
+
+
+class UpdateForm(FlaskForm):
+
+    choice = ['Male', 'Female']
+
+    fullname = StringField('fullname_label')
+    sex = SelectField(u'Choose', choices=choice)
+    personal_email = StringField('personal_email_label', validators=[Email('Not a valid email')])
+    department_email = StringField('department_email_label', validators=[Email('Not a valid email')])
+    phone_number = StringField('phone_number_label')
+    national_id_card_number = IntegerField('national_id_card_number_label')
+    rank = StringField('rank_label')
+    station = StringField('station_label')
+    officer_id = StringField('officer_id_label')
+    update_button = SubmitField('Update')
