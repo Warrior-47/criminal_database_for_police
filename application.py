@@ -327,88 +327,6 @@ def display_profile():
     return render_template('dashboard-profile.html', form_dp=dp, data=data)
 
 
-@app.route('/lookinto', methods=['GET', 'POST'])
-def lookinto():
-    #keeping all the username in usr
-    names = db.session.query(Users.Username).all()
-    usr=[]
-
-    for i in names:
-        usr.append(i[0])
-
-    at_form = LookIntoForm()
-    if at_form.validate_on_submit():
-        username=at_form.username.data
-        if username in usr:
-            return redirect(url_for('update',key=username))
-        else:
-            flash('useranme doesnot exist', 'danger')
-            render_template('admin_update.html', c=1, form=at_form)
-    return render_template('admin_update.html', c=1, form=at_form)
-
-
-
-@app.route('/update/<key>', methods=['GET', 'POST'])
-def update(key):
-    dp = UpdateForm()
-    if dp.validate_on_submit():
-        print("ami update and ami thiknai")
-        Name = dp.fullname.data
-        sex = dp.sex.data
-        personal_email = dp.personal_email.data
-        department_email = dp.department_email.data
-        phone_number = dp.phone_number.data
-        nid = dp.national_id_card_number.data
-        rank = dp.rank.data
-        station = dp.station.data
-        officer_id = dp.officer_id.data
-
-        user = Users.query.filter_by(Username=key).first()
-        pb = police_officers.query.filter_by(Username=key).first()
-
-        user.Name = Name
-        user.Gender = sex[0]
-        user.Personal_email = personal_email
-        user.Department_email = department_email
-        user.Phone_No = phone_number
-        user.NID_No = nid
-        pb.Rank = rank
-        pb.Station = station
-        pb.Officer_id = officer_id
-
-        db.session.merge(user)
-        db.session.merge(pb)
-        db.session.commit()
-
-        flash('Updated Successfully', 'success')
-
-    stmt = "SELECT users.Username, users.Name, users.NID_No, users.Gender, users.Phone_No, users.Personal_email, users.Department_email, police_officers.Officer_id, police_officers.Rank, police_officers.Station, users.privilege FROM users, police_officers where users.Username=police_officers.Username AND users.Username= \'"+key+ \
-                "'"
-    data = db.session.execute(stmt).fetchone()
-    db.session.close()
-
-    return render_template('admin_update.html', form_dp=dp, data=data,key=key)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @app.route('/validate', methods=['GET', 'POST'])
 def validate():
     clr_form = SecurityForm()
@@ -464,15 +382,15 @@ def Table():
         s = tb_form.T_name.data
         if s == 'Officer Information':
             # return render_template("present.html", query=Users.query.all(),form=tb_form,c=1)
-            stmt = 'Select o.Username,u.Name,o.Officer_id,u.NID_No,u.Gender,u.Phone_No,u.Personal_email,u.Department_email,o.Station,o.Rank,o.Clearance from Users u, police_officers o where u.username = o.username'
+            stmt = 'Select o.Username,u.Name,o.Officer_id,u.NID_No,u.Gender,u.Phone_No,u.Personal_email,u.Department_email,o.Station,o.Rank,o.Clearance from Users u, police_officers o where u.username = o.username order by o.Clearance '
             crims = db.session.execute(stmt).fetchall()
             return render_template('admin_any_table.html', tn=s, data=crims, head=crims[0].keys(), c=2)
         elif s == 'Crime Report':
-            stmt = 'Select c.Case_No,i.Officer_id  AS Investigated_By , co.Criminal_id,cr.Name AS Criminal_Name,c.Crime_date,c.End_date,c.Address,c.Clearance from  investigate_by i ,crime c, criminal cr, Committed_by co where c.Case_No = co.Case_No AND cr.Criminal_id = co.Criminal_id AND i.Case_No = co.Case_No'
+            stmt = 'Select c.Case_No,i.Officer_id  AS Investigated_By , co.Criminal_id,cr.Name AS Criminal_Name,c.Crime_date,c.End_date,c.Address,c.Clearance from  investigate_by i ,crime c, criminal cr, Committed_by co where c.Case_No = co.Case_No AND cr.Criminal_id = co.Criminal_id AND i.Case_No = co.Case_No order by c.Clearance'
             crims = db.session.execute(stmt).fetchall()
             return render_template('admin_any_table.html', tn=s, data=crims, head=crims[0].keys(), c=2)
         elif s == "Criminal Report":
-            stmt = 'Select c.Photo, c.Criminal_id,c.Name,c.Age,c.Nationality,c.Nid_No,c.Motive,c.Phone_No,c.Address,cr.Remark from criminal c left join Criminal_Remarks cr on c.Criminal_id = cr.Criminal_id'
+            stmt = 'Select c.Photo, c.Criminal_id,c.Name,c.Age,c.Nationality,c.Nid_No,c.Motive,c.Phone_No,c.Address,cr.Remark from criminal c left join Criminal_Remarks cr on c.Criminal_id = cr.Criminal_id order by c.Criminal_id'
             crims = db.session.execute(stmt).fetchall()
             return render_template('admin_any_table.html', tn=s, data=crims, head=crims[0].keys(), c=2)
         elif s == 'Medical Team':
@@ -562,6 +480,72 @@ def AddColumn():
             flash("Table does not Exist. Try Again", 'danger')
             return redirect(url_for('AddColumn'))
     return render_template('admin_addcolumn.html')
+
+
+
+@app.route('/lookinto', methods=['GET', 'POST'])
+def lookinto():
+    #keeping all the username in usr
+    names = db.session.query(Users.Username).all()
+    usr=[]
+
+    for i in names:
+        usr.append(i[0])
+
+    at_form = LookIntoForm()
+    if at_form.validate_on_submit():
+        username=at_form.username.data
+        if username in usr:
+            return redirect(url_for('update',key=username))
+        else:
+            flash('useranme doesnot exist', 'danger')
+            render_template('admin_update.html', c=1, form=at_form)
+    return render_template('admin_update.html', c=1, form=at_form)
+
+
+
+@app.route('/update/<key>', methods=['GET', 'POST'])
+def update(key):
+
+    dp = UpdateForm()
+    if dp.validate_on_submit():
+        print("ami update and ami thiknai")
+        Name = dp.fullname.data
+        sex = dp.sex.data
+        personal_email = dp.personal_email.data
+        department_email = dp.department_email.data
+        phone_number = dp.phone_number.data
+        nid = dp.national_id_card_number.data
+        rank = dp.rank.data
+        station = dp.station.data
+        officer_id = dp.officer_id.data
+
+        user = Users.query.filter_by(Username=key).first()
+        pb = police_officers.query.filter_by(Username=key).first()
+
+        user.Name = Name
+        user.Gender = sex[0]
+        user.Personal_email = personal_email
+        user.Department_email = department_email
+        user.Phone_No = phone_number
+        user.NID_No = nid
+        pb.Rank = rank
+        pb.Station = station
+        pb.Officer_id = officer_id
+
+        db.session.merge(user)
+        db.session.merge(pb)
+        db.session.commit()
+
+        flash('Updated Successfully', 'success')
+
+    stmt = "SELECT users.Username, users.Name, users.NID_No, users.Gender, users.Phone_No, users.Personal_email, users.Department_email, police_officers.Officer_id, police_officers.Rank, police_officers.Station, users.privilege FROM users, police_officers where users.Username=police_officers.Username AND users.Username= \'"+key+ \
+                "'"
+    data = db.session.execute(stmt).fetchone()
+    db.session.close()
+
+    return render_template('admin_update.html', form_dp=dp, data=data,key=key)
+
 
 
 @app.teardown_appcontext
