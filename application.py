@@ -513,6 +513,7 @@ def update(key):
 
     dp = UpdateForm()
     if dp.validate_on_submit():
+        # Saving all input from the form in variables
         Name = dp.fullname.data
         sex = dp.sex.data
         personal_email = dp.personal_email.data
