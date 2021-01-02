@@ -45,7 +45,8 @@ def load_user(username):
 # index Method is called when '127.0.0.1:port/' this url is used.
 @app.route("/", methods=['GET', 'POST'])
 def index():
-    reg_form = RegistrationForm()   # The form used to make the registration page.
+    # The form used to make the registration page.
+    reg_form = RegistrationForm()
 
     # Checks if the form was submitted with no ValidationError
     if reg_form.validate_on_submit():
@@ -104,7 +105,8 @@ def Login():
     # Checks if the username and the corresponding passwords exists in the database
     if login_form.validate_on_submit():
 
-        user_obj = Users.query.filter_by(Username=login_form.username.data).first()
+        user_obj = Users.query.filter_by(
+            Username=login_form.username.data).first()
         login_user(user_obj)
         if user_obj.privilege:
             return redirect(url_for('admin_dashboard'))
@@ -262,7 +264,8 @@ def insert_criminal():
         db.session.commit()
         # Inserting the remark for the criminal that was just added if not empty
         if remark != '':
-            crim_remark = criminal_remarks(Criminal_id=crim.Criminal_id, Remark=remark)
+            crim_remark = criminal_remarks(
+                Criminal_id=crim.Criminal_id, Remark=remark)
             db.session.add(crim_remark)
             db.session.commit()
             db.session.close()
@@ -333,7 +336,8 @@ def validate():
     if clr_form.validate_on_submit():
         Officer_id = clr_form.Officer_id.data
         Clearance = clr_form.Clearance.data
-        security_obj = police_officers.query.filter_by(Officer_id=Officer_id).first()
+        security_obj = police_officers.query.filter_by(
+            Officer_id=Officer_id).first()
         if security_obj:
             security_obj.Clearance = Clearance
             db.session.merge(security_obj)
@@ -435,7 +439,8 @@ def CreateTable():
                         1 else name + ' ' + type + f'({length})'
                 else:
                     stmt += name + ' ' + type + \
-                        ',' if index < len(column_names) - 1 else name + ' ' + type
+                        ',' if index < len(column_names) - \
+                        1 else name + ' ' + type
             stmt += " , FOREIGN KEY(Case_No) REFERENCES Crime(Case_No) ON UPDATE CASCADE ON DELETE CASCADE" + ');'
 
             db.session.execute(stmt)
@@ -460,7 +465,8 @@ def AddColumn():
             # findimg all meta data of a table
             all_column = []
             metadata = MetaData()
-            messages = db.Table(Tname, metadata, autoload=True, autoload_with=db.engine)
+            messages = db.Table(
+                Tname, metadata, autoload=True, autoload_with=db.engine)
             for c in messages.columns:
                 all_column.append(c.name.lower())
             if (column_name.lower()) in all_column:
@@ -482,26 +488,24 @@ def AddColumn():
     return render_template('admin_addcolumn.html')
 
 
-
 @app.route('/lookinto', methods=['GET', 'POST'])
 def lookinto():
-    #keeping all the username in usr
+    # keeping all the username in usr
     names = db.session.query(Users.Username).all()
-    usr=[]
+    usr = []
 
     for i in names:
         usr.append(i[0])
 
     at_form = LookIntoForm()
     if at_form.validate_on_submit():
-        username=at_form.username.data
+        username = at_form.username.data
         if username in usr:
-            return redirect(url_for('update',key=username))
+            return redirect(url_for('update', key=username))
         else:
-            flash('useranme doesnot exist', 'danger')
+            flash('Username Does Not Exist', 'danger')
             render_template('admin_update.html', c=1, form=at_form)
     return render_template('admin_update.html', c=1, form=at_form)
-
 
 
 @app.route('/update/<key>', methods=['GET', 'POST'])
@@ -509,7 +513,6 @@ def update(key):
 
     dp = UpdateForm()
     if dp.validate_on_submit():
-        print("ami update and ami thiknai")
         Name = dp.fullname.data
         sex = dp.sex.data
         personal_email = dp.personal_email.data
@@ -539,13 +542,12 @@ def update(key):
 
         flash('Updated Successfully', 'success')
 
-    stmt = "SELECT users.Username, users.Name, users.NID_No, users.Gender, users.Phone_No, users.Personal_email, users.Department_email, police_officers.Officer_id, police_officers.Rank, police_officers.Station, users.privilege FROM users, police_officers where users.Username=police_officers.Username AND users.Username= \'"+key+ \
-                "'"
+    stmt = "SELECT users.Username, users.Name, users.NID_No, users.Gender, users.Phone_No, users.Personal_email, users.Department_email, police_officers.Officer_id, police_officers.Rank, police_officers.Station, users.privilege FROM users, police_officers where users.Username=police_officers.Username AND users.Username= \'"+key + \
+        "'"
     data = db.session.execute(stmt).fetchone()
     db.session.close()
 
-    return render_template('admin_update.html', form_dp=dp, data=data,key=key)
-
+    return render_template('admin_update.html', form_dp=dp, data=data, key=key)
 
 
 @app.teardown_appcontext
