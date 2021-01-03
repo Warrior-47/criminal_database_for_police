@@ -35,7 +35,9 @@
         <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
+        <form class="form-control form-control-dark w-100" action="{{ url_for('search') }}" method="POST">
+            <input class="form-control form-control-dark w-100" type="text" name='search' placeholder="Search" autocomplete="off" aria-label="Search">
+        </form>
         <ul class="navbar-nav px-3">
             <li class="nav-item text-nowrap">
                 <a class="nav-link" href="{{ url_for('logout') }}">Sign out</a>
@@ -57,5 +59,4 @@
     <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
     <script src="{{ url_for('static', filename='js/tablesort.js') }}"></script>
 </body>
-
 </html>

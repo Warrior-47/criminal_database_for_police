@@ -1,4 +1,4 @@
-{% from 'form_helper.html' import displayField, displayTable %}
+{% from 'form_helper.html' import displayField, displayTable, displaySearchData %}
 
 {% extends "postlogin-layout.html" %}
 
@@ -85,6 +85,19 @@
             </button>
         </div>
     </div>
-    <h3>Section title</h3>
+    <center>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+            <strong>{{message}}</strong>
+        </div>
+        {% endfor %}
+        {% endwith %}
+    </center>
+    <div class="table-responsive">
+        <table class="table table-striped table-sm table-hover table-sortable">
+            {{ displaySearchData(data, meta) }}
+        </table>
+    </div>
 </main>
 {% endblock %}

@@ -40,3 +40,34 @@
     {% endfor %}
 </tbody>
 {% endmacro %}
+
+{% macro displaySearchData(data, meta) %}
+<thead class="table-dark">
+    <tr>
+        {% for data in meta %}
+        <th>{{ data }}</th>
+        {% endfor %}
+    </tr>
+</thead>
+<tbody>
+    {% for row in data %}
+    <tr>
+        {% for m in meta %}
+        <td>
+            {% if m == 'Photo' %}
+            {% if row[m] != None %}
+            {% if row[m] is defined %}
+            <img class='img-rounded' src="{{ url_for('static', filename='criminal_images/'+row[m]) }}" style='width: 120px; height:120px' />
+            {% endif %}
+            {% else %}
+            <img class='img-rounded' src="../static/criminal_images/default_photo.jpg" style='width: 120px; height:120px' />
+            {% endif %}
+            {% else %}
+            {{ row[m] }}
+            {% endif %}
+        </td>
+        {%endfor %}
+    </tr>
+    {% endfor %}
+</tbody>
+{% endmacro %}
