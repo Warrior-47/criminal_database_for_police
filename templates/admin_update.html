@@ -19,12 +19,17 @@
             font-size: 3.5rem;
         }
     }
+
+    td,
+    th {
+        text-align: center;
+        vertical-align: middle;
+    }
 </style>
 
 <!-- Custom styles for this template -->
 <link href="{{ url_for('static', filename='styles/dashboard.css') }}" rel="stylesheet">
 {% endblock %}
-
 {% block content %}
 <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
     <div class="position-sticky pt-3">
@@ -48,7 +53,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active" href="{{ url_for('Attr') }}">
+                <a class="nav-link" href="{{ url_for('Attr') }}">
                     <span data-feather="shopping-cart"></span>
                     Add New Crime Genre
                 </a>
@@ -60,7 +65,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link " href="{{ url_for('lookinto') }}">
+                <a class="nav-link active" href="{{ url_for('lookinto') }}">
                     <span data-feather="users"></span>
                     Information Update
                 </a>
@@ -70,7 +75,7 @@
 </nav>
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Add Crime Genre</h1>
+        <h1 class="h2">Information Update</h1>
     </div>
     <center>
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -82,36 +87,12 @@
         {% endwith %}
     </center>
     <br>
-    {% if c==2 %}
-    <form class="form-group" action="{{ url_for('CreateTable') }}" , method="POST">
-
-        <label class="col-form-label-lg" for="at">Table Name:</label>
-        <input class="form-control" type='text' id='name' , name='name' placeholder='Table Name'><br>
-        {% for i in range (num) %}
-        <label class="col-form-label-lg" for="at">Attribute Name:</label>
-        <input class="form-control" type="text" id="at" name="at" placeholder="Enter Attribute Name"><br>
-        <label class="col-form-label-lg" for="id1">Attribute Type :</label>
-        <select class="form-control" name="op" id="op">
-            <option value="0">Select Attrribute Type:</option>
-            <option value="VARCHAR">String</option>
-            <option value="INT">Integer</option>
-            <option value="SMALLINT">SmallInteger</option>
-            <option value="Date">Date</option>
-        </select><br>
-
-        <label class="col-form-label-lg" for="ta">Attribute Length:</label>
-
-        <input class="form-control" type="number" id="ta" name="ta" placeholder="Attribute Length"><br>
-
-        {% endfor %}
-        <input class="btn btn-outline-dark btn mb-3" type="submit" value="Submit">
-    </form>
-    {% else %}
-    <form class="row row-cols-lg-auto g-3 align-items-center" action="{{ url_for('CreateTable') }}" , method="POST">
+    {%if c==1 %}
+    <form class="row row-cols-lg-auto g-3 align-items-center" action="{{ url_for('lookinto') }}" , method="POST">
         <div class="col-12">
             <div class="input-group">
-                <label for="Attr" class="col-form-label-lg me-3">Number of Attributes:</label>
-                {{ displayField(form.Attr,'Number of Attributes',autocomplete='off') }}
+                <label for="username" class="col-form-label-lg me-3">Username:</label>
+                {{ displayField(form.username,'Username',autocomplete='off') }}
             </div>
         </div>
         <div class="col-12">
@@ -119,6 +100,29 @@
         </div>
         {{ form.csrf_token }}
     </form>
-    {% endif%}
-</main>
-{% endblock %}
+    {% else %}
+        <form class="form-inline" action="{{ url_for('update',key=key) }}" method="POST">
+            {{ form_dp.hidden_tag() }}
+            <label class="col-form-label-lg">Name: </label>
+            {{ displayField(form_dp.fullname,'Full Name',value=data['Name'], autocomplete='off')}} <br>
+            <label class="col-form-label-lg">Sex: </label>
+            {{ form_dp.sex(class="form-select", value=data['Gender'], autocomplete='off') }}<br>
+            <label class="col-form-label-lg">Personal Email: </label>
+            {{ displayField(form_dp.personal_email,'Personal Email',value=data['Personal_email'], autocomplete='off')}} <br>
+            <label class="col-form-label-lg">Department Email: </label>
+            {{ displayField(form_dp.department_email,'Department Email',value=data['Department_email'],autocomplete='off')}} <br>
+            <label class="col-form-label-lg">Contact Number: </label>
+            {{ displayField(form_dp.phone_number,'Phone Number',value=data['Phone_No'], autocomplete='off')}} <br>
+            <label class="col-form-label-lg">National ID Card Number: </label>
+            {{ displayField(form_dp.national_id_card_number,'NID',value=data['NID_No'],autocomplete='off')}} <br>
+            <label class="col-form-label-lg">Rank: </label>
+            {{ displayField(form_dp.rank,'Rank',value=data['Rank'],autocomplete='off')}} <br>
+            <label class="col-form-label-lg">Station: </label>
+            {{ displayField(form_dp.station,'Station', value=data['Station'],autocomplete='off')}} <br>
+            <label class="col-form-label-lg">Officer ID: </label>
+            {{ displayField(form_dp.officer_id,'Officer ID', value=data['Officer_id'],autocomplete='off')}} <br>
+            {{ form_dp.update_button(class='btn btn-outline-dark mb-3') }}
+        </form>
+    {% endif %}
+    </main>
+    {% endblock %}

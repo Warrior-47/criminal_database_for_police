@@ -45,7 +45,8 @@ def load_user(username):
 # index Method is called when '127.0.0.1:port/' this url is used.
 @app.route("/", methods=['GET', 'POST'])
 def index():
-    reg_form = RegistrationForm()   # The form used to make the registration page.
+    # The form used to make the registration page.
+    reg_form = RegistrationForm()
 
     # Checks if the form was submitted with no ValidationError
     if reg_form.validate_on_submit():
@@ -104,7 +105,8 @@ def Login():
     # Checks if the username and the corresponding passwords exists in the database
     if login_form.validate_on_submit():
 
-        user_obj = Users.query.filter_by(Username=login_form.username.data).first()
+        user_obj = Users.query.filter_by(
+            Username=login_form.username.data).first()
         login_user(user_obj)
         if user_obj.privilege:
             return redirect(url_for('admin_dashboard'))
@@ -269,7 +271,8 @@ def insert_criminal():
         db.session.commit()
         # Inserting the remark for the criminal that was just added if not empty
         if remark != '':
-            crim_remark = criminal_remarks(Criminal_id=crim.Criminal_id, Remark=remark)
+            crim_remark = criminal_remarks(
+                Criminal_id=crim.Criminal_id, Remark=remark)
             db.session.add(crim_remark)
             db.session.commit()
             db.session.close()
@@ -340,7 +343,8 @@ def validate():
     if clr_form.validate_on_submit():
         Officer_id = clr_form.Officer_id.data
         Clearance = clr_form.Clearance.data
-        security_obj = police_officers.query.filter_by(Officer_id=Officer_id).first()
+        security_obj = police_officers.query.filter_by(
+            Officer_id=Officer_id).first()
         if security_obj:
             security_obj.Clearance = Clearance
             db.session.merge(security_obj)
@@ -389,15 +393,15 @@ def Table():
         s = tb_form.T_name.data
         if s == 'Officer Information':
             # return render_template("present.html", query=Users.query.all(),form=tb_form,c=1)
-            stmt = 'Select o.Username,u.Name,o.Officer_id,u.NID_No,u.Gender,u.Phone_No,u.Personal_email,u.Department_email,o.Station,o.Rank,o.Clearance from Users u, police_officers o where u.username = o.username'
+            stmt = 'Select o.Username,u.Name,o.Officer_id,u.NID_No,u.Gender,u.Phone_No,u.Personal_email,u.Department_email,o.Station,o.Rank,o.Clearance from Users u, police_officers o where u.username = o.username order by o.Clearance '
             crims = db.session.execute(stmt).fetchall()
             return render_template('admin_any_table.html', tn=s, data=crims, head=crims[0].keys(), c=2)
         elif s == 'Crime Report':
-            stmt = 'Select c.Case_No,i.Officer_id  AS Investigated_By , co.Criminal_id,cr.Name AS Criminal_Name,c.Crime_date,c.End_date,c.Address,c.Clearance from  investigate_by i ,crime c, criminal cr, Committed_by co where c.Case_No = co.Case_No AND cr.Criminal_id = co.Criminal_id AND i.Case_No = co.Case_No'
+            stmt = 'Select c.Case_No,i.Officer_id  AS Investigated_By , co.Criminal_id,cr.Name AS Criminal_Name,c.Crime_date,c.End_date,c.Address,c.Clearance from  investigate_by i ,crime c, criminal cr, Committed_by co where c.Case_No = co.Case_No AND cr.Criminal_id = co.Criminal_id AND i.Case_No = co.Case_No order by c.Clearance'
             crims = db.session.execute(stmt).fetchall()
             return render_template('admin_any_table.html', tn=s, data=crims, head=crims[0].keys(), c=2)
         elif s == "Criminal Report":
-            stmt = 'Select c.Photo, c.Criminal_id,c.Name,c.Age,c.Nationality,c.Nid_No,c.Motive,c.Phone_No,c.Address,cr.Remark from criminal c left join Criminal_Remarks cr on c.Criminal_id = cr.Criminal_id'
+            stmt = 'Select c.Photo, c.Criminal_id,c.Name,c.Age,c.Nationality,c.Nid_No,c.Motive,c.Phone_No,c.Address,cr.Remark from criminal c left join Criminal_Remarks cr on c.Criminal_id = cr.Criminal_id order by c.Criminal_id'
             crims = db.session.execute(stmt).fetchall()
             return render_template('admin_any_table.html', tn=s, data=crims, head=crims[0].keys(), c=2)
         elif s == 'Medical Team':
@@ -442,7 +446,8 @@ def CreateTable():
                         1 else name + ' ' + type + f'({length})'
                 else:
                     stmt += name + ' ' + type + \
-                        ',' if index < len(column_names) - 1 else name + ' ' + type
+                        ',' if index < len(column_names) - \
+                        1 else name + ' ' + type
             stmt += " , FOREIGN KEY(Case_No) REFERENCES Crime(Case_No) ON UPDATE CASCADE ON DELETE CASCADE" + ');'
 
             db.session.execute(stmt)
@@ -467,7 +472,8 @@ def AddColumn():
             # findimg all meta data of a table
             all_column = []
             metadata = MetaData()
-            messages = db.Table(Tname, metadata, autoload=True, autoload_with=db.engine)
+            messages = db.Table(
+                Tname, metadata, autoload=True, autoload_with=db.engine)
             for c in messages.columns:
                 all_column.append(c.name.lower())
             if (column_name.lower()) in all_column:
@@ -489,6 +495,69 @@ def AddColumn():
     return render_template('admin_addcolumn.html')
 
 
+@app.route('/lookinto', methods=['GET', 'POST'])
+def lookinto():
+    # keeping all the username in usr
+    names = db.session.query(Users.Username).all()
+    usr = []
+
+    for i in names:
+        usr.append(i[0])
+
+    at_form = LookIntoForm()
+    if at_form.validate_on_submit():
+        username = at_form.username.data
+        if username in usr:
+            return redirect(url_for('update', key=username))
+        else:
+            flash('Username Does Not Exist', 'danger')
+            render_template('admin_update.html', c=1, form=at_form)
+    return render_template('admin_update.html', c=1, form=at_form)
+
+
+@app.route('/update/<key>', methods=['GET', 'POST'])
+def update(key):
+
+    dp = UpdateForm()
+    if dp.validate_on_submit():
+        # Saving all input from the form in variables
+        Name = dp.fullname.data
+        sex = dp.sex.data
+        personal_email = dp.personal_email.data
+        department_email = dp.department_email.data
+        phone_number = dp.phone_number.data
+        nid = dp.national_id_card_number.data
+        rank = dp.rank.data
+        station = dp.station.data
+        officer_id = dp.officer_id.data
+
+        user = Users.query.filter_by(Username=key).first()
+        pb = police_officers.query.filter_by(Username=key).first()
+
+        user.Name = Name
+        user.Gender = sex[0]
+        user.Personal_email = personal_email
+        user.Department_email = department_email
+        user.Phone_No = phone_number
+        user.NID_No = nid
+        pb.Rank = rank
+        pb.Station = station
+        pb.Officer_id = officer_id
+
+        db.session.merge(user)
+        db.session.merge(pb)
+        db.session.commit()
+
+        flash('Updated Successfully', 'success')
+
+    stmt = "SELECT users.Username, users.Name, users.NID_No, users.Gender, users.Phone_No, users.Personal_email, users.Department_email, police_officers.Officer_id, police_officers.Rank, police_officers.Station, users.privilege FROM users, police_officers where users.Username=police_officers.Username AND users.Username= \'"+key + \
+        "'"
+    data = db.session.execute(stmt).fetchone()
+    db.session.close()
+
+    return render_template('admin_update.html', form_dp=dp, data=data, key=key)
+
+  
 @app.route('/search', methods=['GET','POST'])
 def search():
     search_this = {
@@ -521,7 +590,6 @@ def search():
             return render_template('dashboard.html',data=res, meta=x)
     flash('Result Not Found', 'danger')
     return redirect(url_for('dashboard'))
-
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
