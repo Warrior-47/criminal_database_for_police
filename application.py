@@ -193,12 +193,19 @@ def admin_dashboard():
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
     # Checks if the user is logged in. If not, takes them back to login page.
+    search_form = SearchForm()
     if not current_user.is_authenticated:
         flash('Please Login first', 'danger')
         return redirect(url_for('Login'))
 
+    user_obj = Users.query.filter_by(Username=current_user.get_id()[0]).first()
+    clearance = user_obj.police.Clearance
+
+    stmt = 'Select c.Case_No, c.Crime_date, c.End_date, d.Description as Evidence_Decription, d.collection_date as Evidence_Collection_date, d.location as Evidence_Location, n.Name as Criminal_name, n.Address, p.Officer_id as Investigated_By, p.Rank from users u, crime c, investigate_by i, police_officers p, crime_evidence d, Committed_by cb, criminal n where u.username = p.username and p.Officer_id = i.Officer_id and c.Case_No = i.Case_No and n.Criminal_id = cb.Criminal_id and c.Case_No = cb.Case_No and d.Case_No = c.Case_No and c.Clearance >= '+str(clearance)+' group by c.Case_No'
+
+    data = db.session.execute(stmt).fetchall()
     # The html page to load when going to '127.0.0.1:port/dashboard'
-    return render_template('dashboard.html')
+    return render_template('dashboard.html', data=data, meta=data[0].keys())
 
 
 # login Method is called when '127.0.0.1:port/dashboard/criminals' this url is used.
@@ -550,6 +557,39 @@ def update(key):
 
     return render_template('admin_update.html', form_dp=dp, data=data, key=key)
 
+  
+@app.route('/search', methods=['GET','POST'])
+def search():
+    search_this = {
+        'criminal' : ['Criminal_id','Name','NID_No','Address', 'Motive'],
+        'crime' : ['Case_No'],
+        'crime_evidence' : ['Description','location'],
+        'murder' : ['Murder_type'],
+        'drugs' : ['Drug'],
+        'criminal_remarks' : ['Remark']
+    }
+    if request.method == "POST":
+        searched_item = request.form['search']
+        res = []
+        for key in search_this.keys():
+            stmt = 'Select * from ' + key + ' where '
+            for data in search_this[key]:
+                temp = stmt
+                temp += data +' like "%'+searched_item+'%"'
+                result = db.session.execute(temp).fetchall()
+                if result:
+                    for row in result:
+                        dic = [{key:value for key, value in row.items()} for row in result]
+                    for d in dic:
+                        res.append(d)
+        if res:
+            x = set()
+            for row in res:
+                y = {meta for meta in row.keys()}
+                x = x.union(y)
+            return render_template('dashboard.html',data=res, meta=x)
+    flash('Result Not Found', 'danger')
+    return redirect(url_for('dashboard'))
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
