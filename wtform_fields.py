@@ -27,7 +27,8 @@ class ProfileForm(FlaskForm):
 
     fullname = StringField('fullname_label')
     sex = SelectField(u'Choose', choices=choice)
-    personal_email = StringField('personal_email_label', validators=[Email('Not a valid email')])
+    personal_email = StringField('personal_email_label', validators=[
+                                 Email('Not a valid email')])
     department_email = StringField('department_email_label')
     phone_number = StringField('phone_number_label')
     national_id_card_number = IntegerField('national_id_card_number_label')
@@ -35,7 +36,7 @@ class ProfileForm(FlaskForm):
     station = StringField('station_label')
     officer_id = StringField('officer_id_label')
     old_password = PasswordField('password_label', validators=[
-                                 InputRequired(message="Input required")])
+                                 InputRequired()])
     new_password = PasswordField('password_label')
     confirm_pswd = PasswordField('confirm_pswd_label', validators=[
                                  EqualTo('new_password', message='Password doesn\'t match.')])
@@ -51,24 +52,24 @@ class RegistrationForm(FlaskForm):
     """
     choice = ['Sex:', 'Male', 'Female']
 
-    fullname = StringField('fullname_label', validators=[InputRequired(message="Input required")])
-    password = PasswordField('password_label', validators=[InputRequired(message="Input required")])
-    confirm_pswd = PasswordField('confirm_pswd_label', validators=[InputRequired(
-        message="Input required"), EqualTo('password', message='Password doesn\'t match.')])
+    fullname = StringField('fullname_label', validators=[InputRequired()])
+    password = PasswordField('password_label', validators=[InputRequired()])
+    confirm_pswd = PasswordField('confirm_pswd_label', validators=[
+                                 InputRequired(), EqualTo('password', message='Password doesn\'t match.')])
     personal_email = StringField('personal_email_label', validators=[
-                                 InputRequired(message="Input required"), Email('Not a valid email')])
+                                 InputRequired(), Email('Not a valid email')])
     department_email = StringField('department_email_label', validators=[
-                                   InputRequired(message="Input required"), Email('Not a valid email')])
+                                   InputRequired(), Email('Not a valid email')])
     sex = SelectField(u'Choose', choices=choice)
     phone_number = StringField('phone_number_label', validators=[
-                               InputRequired(message="Input required")])
-    national_id_card_number = IntegerField('national_id_card_number_label', validators=[
-                                           InputRequired(message="Input required")])
-    username = StringField('username_label', validators=[InputRequired(message="Input required")])
-    rank = StringField('rank_label', validators=[InputRequired(message="Input required")])
-    station = StringField('station_label', validators=[InputRequired(message="Input required")])
+                               InputRequired()])
+    national_id_card_number = IntegerField(
+        'national_id_card_number_label', validators=[InputRequired()])
+    username = StringField('username_label', validators=[InputRequired()])
+    rank = StringField('rank_label', validators=[InputRequired()])
+    station = StringField('station_label', validators=[InputRequired()])
     officer_id = StringField('officer_id_label', validators=[
-                             InputRequired(message="Input required")])
+                             InputRequired()])
     submit_button = SubmitField('Register')
 
     def validate_username(self, username):
@@ -93,9 +94,9 @@ class LoginForm(FlaskForm):
     See the login.html file to see how they are connected
 
     """
-    username = StringField('username_label', validators=[InputRequired(message="Input required")])
+    username = StringField('username_label', validators=[InputRequired()])
     password = PasswordField('password_label', validators=[
-                             InputRequired(message="Input required"), validate_credentials])
+                             InputRequired(), validate_credentials])
     submit_button = SubmitField('Sign in')
 
 
@@ -143,15 +144,13 @@ class InformationForm(FlaskForm):
 
 
 class AttributeForm(FlaskForm):
-    Attr = IntegerField('Attr_label', validators=[InputRequired(message="InputRequired")])
+    Attr = IntegerField('Attr_label', validators=[InputRequired()])
     submit_button = SubmitField('Click Here')
 
 
 class LookIntoForm(FlaskForm):
-    username = StringField('username_label', validators=[InputRequired(message="InputRequired")])
+    username = StringField('username_label', validators=[InputRequired()])
     submit_button = SubmitField('Submit')
-
-
 
 
 class UpdateForm(FlaskForm):
@@ -160,8 +159,10 @@ class UpdateForm(FlaskForm):
 
     fullname = StringField('fullname_label')
     sex = SelectField(u'Choose', choices=choice)
-    personal_email = StringField('personal_email_label', validators=[Email('Not a valid email')])
-    department_email = StringField('department_email_label', validators=[Email('Not a valid email')])
+    personal_email = StringField('personal_email_label', validators=[
+                                 Email('Not a valid email')])
+    department_email = StringField('department_email_label', validators=[
+                                   Email('Not a valid email')])
     phone_number = StringField('phone_number_label')
     national_id_card_number = IntegerField('national_id_card_number_label')
     rank = StringField('rank_label')

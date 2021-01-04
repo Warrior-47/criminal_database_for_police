@@ -1,4 +1,3 @@
-from datetime import datetime
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_login import LoginManager, login_user, current_user, logout_user
 from sqlalchemy import DDL, MetaData
@@ -66,7 +65,8 @@ def index():
 
         hashed_pswd = pbkdf2_sha256.hash(password)   # Hashed Password
 
-        # Making Users and police_officers table object to insert into the database
+        # Making Users and police_officers table object to insert into the
+        # database
         user = Users(Username=username, Name=fullname, NID_No=nid_no,
                      Gender=sex[0], Pass=hashed_pswd, Phone_No=phone_number,
                      Personal_email=personal_email, Department_email=dept_email,
@@ -201,7 +201,8 @@ def dashboard():
     user_obj = Users.query.filter_by(Username=current_user.get_id()[0]).first()
     clearance = user_obj.police.Clearance
 
-    stmt = 'Select c.Case_No, c.Crime_date, c.End_date, d.Description as Evidence_Decription, d.collection_date as Evidence_Collection_date, d.location as Evidence_Location, n.Name as Criminal_name, n.Address, p.Officer_id as Investigated_By, p.Rank from users u, crime c, investigate_by i, police_officers p, crime_evidence d, Committed_by cb, criminal n where u.username = p.username and p.Officer_id = i.Officer_id and c.Case_No = i.Case_No and n.Criminal_id = cb.Criminal_id and c.Case_No = cb.Case_No and d.Case_No = c.Case_No and c.Clearance >= '+str(clearance)+' group by c.Case_No'
+    stmt = 'Select c.Case_No, c.Crime_date, c.End_date, d.Description as Evidence_Decription, d.collection_date as Evidence_Collection_date, d.location as Evidence_Location, n.Name as Criminal_name, n.Address, p.Officer_id as Investigated_By, p.Rank from users u, crime c, investigate_by i, police_officers p, crime_evidence d, Committed_by cb, criminal n where u.username = p.username and p.Officer_id = i.Officer_id and c.Case_No = i.Case_No and n.Criminal_id = cb.Criminal_id and c.Case_No = cb.Case_No and d.Case_No = c.Case_No and c.Clearance >= ' + \
+        str(clearance)
 
     data = db.session.execute(stmt).fetchall()
     # The html page to load when going to '127.0.0.1:port/dashboard'
@@ -557,16 +558,16 @@ def update(key):
 
     return render_template('admin_update.html', form_dp=dp, data=data, key=key)
 
-  
-@app.route('/search', methods=['GET','POST'])
+
+@app.route('/search', methods=['GET', 'POST'])
 def search():
     search_this = {
-        'criminal' : ['Criminal_id','Name','NID_No','Address', 'Motive'],
-        'crime' : ['Case_No'],
-        'crime_evidence' : ['Description','location'],
-        'murder' : ['Murder_type'],
-        'drugs' : ['Drug'],
-        'criminal_remarks' : ['Remark']
+        'criminal': ['Criminal_id', 'Name', 'NID_No', 'Address', 'Motive'],
+        'crime': ['Case_No'],
+        'crime_evidence': ['Description', 'location'],
+        'murder': ['Murder_type'],
+        'drugs': ['Drug'],
+        'criminal_remarks': ['Remark']
     }
     if request.method == "POST":
         searched_item = request.form['search']
@@ -575,11 +576,12 @@ def search():
             stmt = 'Select * from ' + key + ' where '
             for data in search_this[key]:
                 temp = stmt
-                temp += data +' like "%'+searched_item+'%"'
+                temp += data + ' like "%'+searched_item+'%"'
                 result = db.session.execute(temp).fetchall()
                 if result:
                     for row in result:
-                        dic = [{key:value for key, value in row.items()} for row in result]
+                        dic = [{key: value for key, value in row.items()}
+                               for row in result]
                     for d in dic:
                         res.append(d)
         if res:
@@ -587,9 +589,11 @@ def search():
             for row in res:
                 y = {meta for meta in row.keys()}
                 x = x.union(y)
-            return render_template('dashboard.html',data=res, meta=x)
+            flash(f'Found {len(res)} Result(s)', 'success')
+            return render_template('dashboard.html', data=res, meta=x)
     flash('Result Not Found', 'danger')
     return redirect(url_for('dashboard'))
+
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
