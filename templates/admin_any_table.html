@@ -19,12 +19,6 @@
             font-size: 3.5rem;
         }
     }
-
-    td,
-    th {
-        text-align: center;
-        vertical-align: middle;
-    }
 </style>
 
 <!-- Custom styles for this template -->
@@ -37,31 +31,31 @@
         <ul class="nav flex-column">
             <li class="nav-item">
                 <a class="nav-link" href="{{url_for('admin_dashboard')}}">
-                    <span data-feather="users"></span>
+                    <span data-feather="user"></span>
                     Profile
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="{{ url_for('Table') }}">
-                    <span data-feather="home"></span>
+                    <span data-feather="database"></span>
                     Show Tables
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('validate') }}">
-                    <span data-feather="file"></span>
+                    <span data-feather="alert-octagon"></span>
                     Security Clearance
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('Attr') }}">
-                    <span data-feather="shopping-cart"></span>
+                    <span data-feather="folder-plus"></span>
                     Add New Crime Genre
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('AddColumn') }}">
-                    <span data-feather="users"></span>
+                    <span data-feather="file-plus"></span>
                     Add New Column
                 </a>
             </li>
@@ -93,7 +87,7 @@
     {% else %}
     <h3>{{ tn }}</h3>
     <div class="table-responsive">
-        <table class="table table-striped table-sm table-hover">
+        <table class="table table-sm table-hover table-sortable">
             {{ displayTable(data,head) }}
         </table>
     </div>

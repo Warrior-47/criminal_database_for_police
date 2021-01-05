@@ -1,5 +1,6 @@
 #Directories
 criminal_images/
+.vscode
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
