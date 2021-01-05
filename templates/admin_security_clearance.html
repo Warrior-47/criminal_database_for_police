@@ -71,7 +71,7 @@
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h1 class="h2">Security Clearance</h1>
-        <div class="btn-group me-4 w-25">
+        <div class="btn-group me-4" style="width: 13%">
             <button id="btnGroupDrop1" type="button" class="btn btn-md btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                 Search
             </button>
@@ -87,35 +87,45 @@
                 </div>
                 {{ form.submit_button(value='Search', class='btn btn-primary') }}
             </form>
-            <button id="btnGroupDrop1" type="button" class="btn btn-md btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                Clearance
-            </button>
-            <form class="dropdown-menu p-1" action="{{ url_for('validate') }}" , method="POST">
-                {{ form.hidden_tag() }}
-                <div class="m-1">
-                    <label for='Officer_id' class="form-label">Officer ID:</label>
-                    {{ displayField(form.Officer_id,'Officer ID',autocomplete='off') }}
-                </div>
-                <div class="m-1">
-                    <label for='Clearance' class="form-label">Clearance:</label>
-                    {{ form.Clearance(class='form-select form-select-sm') }}
-                </div>
-                {{ form.submit_button(value='Update', class='btn btn-primary') }}
-            </form>
         </div>
     </div>
     <div class="table-responsive my-4 px-2">
+        <h3>Update Clearance:</h3>
+        <form class="form-group" action="{{ url_for('validate') }}" , method="POST">
+            {{ form.hidden_tag() }}
+            <div class="m-1">
+                <label for='Officer_id' class="col-form-label-lg">Officer ID:</label>
+                {{ form.Officer_id(class="form-control w-25", placeholder="Officer ID", autocomplete="off") }}
+            </div>
+            <div class="m-1">
+                <label for='Clearance' class="col-form-label-lg">Clearance:</label>
+                {{ form.Clearance(class='form-select form-select-sm w-25') }}
+            </div>
+            {{ form.submit_button(value='Update', class='btn btn-outline-dark mt-2 mx-1') }}
+        </form>
+        <center>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+            <br>
+            <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+                <strong>{{message}}</strong>
+            </div>
+            {% endfor %}
+            {% endwith %}
+        </center>
+        <hr>
         {% if flag %}
         <h3>Officer Information:</h3><br>
-        <table class="table table-striped table-sm table-hover table-sortable">
+        <table class="table table-sm table-hover table-sortable">
             {{ displayTable(data1, head1) }}
         </table><br>
+        <hr>
         <h3>Crime Information:</h3><br>
-        <table class="table table-striped table-sm table-hover table-sortable">
+        <table class="table table-sm table-hover table-sortable">
             {{ displayTable(data2, head2) }}
         </table>
         {% else %}
-        <table class="table table-striped table-sm table-hover table-sortable">
+        <table class="table table-sm table-hover table-sortable">
             {{ displayTable(data,head) }}
         </table>
         {% endif %}
