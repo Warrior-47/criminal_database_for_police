@@ -11,7 +11,7 @@ class Users(UserMixin, db.Model):
     Username = db.Column(db.String(128), primary_key=True,
                          unique=True, nullable=False)
 
-    Name = db.Column(db.String(128), unique=True,
+    Name = db.Column(db.String(128),
                      nullable=False)
     NID_No = db.Column(db.String(10), unique=True, nullable=True)
     Gender = db.Column(db.String(1), nullable=False)
@@ -35,11 +35,13 @@ class police_officers(db.Model):
                            nullable=False, primary_key=True)
     Station = db.Column(db.String(32), nullable=True)
     Rank = db.Column(db.String(32), nullable=True)
-    Supervisor_id = db.Column(db.String(128), db.ForeignKey("police_officers.Officer_id"))
+    Supervisor_id = db.Column(
+        db.String(128), db.ForeignKey("police_officers.Officer_id"))
     Clearance = db.Column(db.Integer(), nullable=False, default=10)
 
     criminals_caught = db.relationship("Caught_by", backref="police_officers")
-    investigations = db.relationship("Investigate_by", backref="police_officers")
+    investigations = db.relationship(
+        "Investigate_by", backref="police_officers")
 
 
 class criminal(db.Model):
@@ -71,8 +73,10 @@ class crime(db.Model):
     evidence = db.relationship("Crime_evidence", backref="crime")
     murder = db.relationship("Murder", backref="crime", uselist=False)
     fraud = db.relationship("Fraud", backref="crime", uselist=False)
-    drug_trafficking = db.relationship("drug_trafficking", backref="crime", uselist=False)
-    human_trafficking = db.relationship("Human_trafficking", backref="crime", uselist=False)
+    drug_trafficking = db.relationship(
+        "drug_trafficking", backref="crime", uselist=False)
+    human_trafficking = db.relationship(
+        "Human_trafficking", backref="crime", uselist=False)
     rape = db.relationship("Rape", backref="crime", uselist=False)
     investigations = db.relationship("Investigate_by", backref="crime")
     victims = db.relationship("victim", backref="crime")
@@ -83,49 +87,58 @@ class crime(db.Model):
 
 
 class Crime_evidence(db.Model):
-    Case_No = db.Column(db.Integer(), db.ForeignKey("crime.Case_No"), primary_key=True)
+    Case_No = db.Column(db.Integer(), db.ForeignKey(
+        "crime.Case_No"), primary_key=True)
     Description = db.Column(db.String(128))
     Collection_date = db.Column(db.DateTime(), default=datetime.utcnow())
     location = db.Column(db.String(128))
 
 
 class Murder(db.Model):
-    Case_No = db.Column(db.Integer(), db.ForeignKey("crime.Case_No"), primary_key=True)
+    Case_No = db.Column(db.Integer(), db.ForeignKey(
+        "crime.Case_No"), primary_key=True)
     Murder_type = db.Column(db.String(32))
 
 
 class Fraud(db.Model):
-    Case_No = db.Column(db.Integer(), db.ForeignKey("crime.Case_No"), primary_key=True)
+    Case_No = db.Column(db.Integer(), db.ForeignKey(
+        "crime.Case_No"), primary_key=True)
     Amount = db.Column(db.Integer())
 
 
 class drug_trafficking(db.Model):
-    Case_No = db.Column(db.Integer(), db.ForeignKey("crime.Case_No"), primary_key=True)
+    Case_No = db.Column(db.Integer(), db.ForeignKey(
+        "crime.Case_No"), primary_key=True)
 
     drugs = db.relationship("Drugs", backref="drug_trafficking")
 
 
 class Drugs(db.Model):
-    Case_No = db.Column(db.Integer(), db.ForeignKey("drug_trafficking.Case_No"), primary_key=True)
+    Case_No = db.Column(db.Integer(), db.ForeignKey(
+        "drug_trafficking.Case_No"), primary_key=True)
     Drug = db.Column(db.String(32), primary_key=True)
 
 
 class Human_trafficking(db.Model):
-    Case_No = db.Column(db.Integer(), db.ForeignKey("crime.Case_No"), primary_key=True)
+    Case_No = db.Column(db.Integer(), db.ForeignKey(
+        "crime.Case_No"), primary_key=True)
     Destination = db.Column(db.String(64))
 
 
 class Rape(db.Model):
-    Case_No = db.Column(db.Integer(), db.ForeignKey("crime.Case_No"), primary_key=True)
+    Case_No = db.Column(db.Integer(), db.ForeignKey(
+        "crime.Case_No"), primary_key=True)
 
 
 class criminal_remarks(db.Model):
-    Criminal_id = db.Column(db.Integer(), db.ForeignKey("criminal.Criminal_id"), primary_key=True)
+    Criminal_id = db.Column(db.Integer(), db.ForeignKey(
+        "criminal.Criminal_id"), primary_key=True)
     Remark = db.Column(db.String(64), primary_key=True)
 
 
 class medical_history(db.Model):
-    Criminal_id = db.Column(db.Integer(), db.ForeignKey("criminal.Criminal_id"), primary_key=True)
+    Criminal_id = db.Column(db.Integer(), db.ForeignKey(
+        "criminal.Criminal_id"), primary_key=True)
     Criminal_name = db.Column(db.String(128), primary_key=True, index=True)
     Doctor_name = db.Column(db.String(128), nullable=False)
     Doctor_No = db.Column(db.String(11))
@@ -155,7 +168,8 @@ class Criminal_disability(db.Model):
 class Caught_by(db.Model):
     Officer_id = db.Column(db.String(8), db.ForeignKey(
         "police_officers.Officer_id"), primary_key=True)
-    Criminal_id = db.Column(db.Integer(), db.ForeignKey("criminal.Criminal_id"), primary_key=True)
+    Criminal_id = db.Column(db.Integer(), db.ForeignKey(
+        "criminal.Criminal_id"), primary_key=True)
     Start_date = db.Column(db.DateTime(), default=datetime.utcnow())
     End_date = db.Column(db.DateTime())
 
@@ -163,16 +177,20 @@ class Caught_by(db.Model):
 class Investigate_by(db.Model):
     Officer_id = db.Column(db.String(8), db.ForeignKey(
         "police_officers.Officer_id"), primary_key=True)
-    Case_No = db.Column(db.Integer(), db.ForeignKey("crime.Case_No"), primary_key=True)
+    Case_No = db.Column(db.Integer(), db.ForeignKey(
+        "crime.Case_No"), primary_key=True)
 
 
 class Committed_by(db.Model):
-    Criminal_id = db.Column(db.Integer(), db.ForeignKey("criminal.Criminal_id"), primary_key=True)
-    Case_No = db.Column(db.Integer(), db.ForeignKey("crime.Case_No"), primary_key=True)
+    Criminal_id = db.Column(db.Integer(), db.ForeignKey(
+        "criminal.Criminal_id"), primary_key=True)
+    Case_No = db.Column(db.Integer(), db.ForeignKey(
+        "crime.Case_No"), primary_key=True)
 
 
 class victim(db.Model):
-    Case_No = db.Column(db.Integer(), db.ForeignKey("crime.Case_No"), primary_key=True)
+    Case_No = db.Column(db.Integer(), db.ForeignKey(
+        "crime.Case_No"), primary_key=True)
     Name = db.Column(db.String(128), primary_key=True, index=True)
     Age = db.Column(db.Integer(), nullable=False)
     Phone_No = db.Column(db.String(11))
@@ -182,7 +200,8 @@ class victim(db.Model):
 
 
 class witness(db.Model):
-    Case_No = db.Column(db.Integer(), db.ForeignKey("crime.Case_No"), primary_key=True)
+    Case_No = db.Column(db.Integer(), db.ForeignKey(
+        "crime.Case_No"), primary_key=True)
     Name = db.Column(db.String(128), primary_key=True, index=True)
     Age = db.Column(db.Integer(), nullable=False)
     Phone_No = db.Column(db.String(11))
@@ -192,10 +211,14 @@ class witness(db.Model):
 
 
 class Witnessed(db.Model):
-    Case_No = db.Column(db.Integer(), db.ForeignKey("crime.Case_No"), primary_key=True)
-    Name = db.Column(db.String(128), db.ForeignKey("witness.Name"), primary_key=True)
+    Case_No = db.Column(db.Integer(), db.ForeignKey(
+        "crime.Case_No"), primary_key=True)
+    Name = db.Column(db.String(128), db.ForeignKey(
+        "witness.Name"), primary_key=True)
 
 
 class Victimized(db.Model):
-    Case_No = db.Column(db.Integer(), db.ForeignKey("crime.Case_No"), primary_key=True)
-    Name = db.Column(db.String(128), db.ForeignKey("victim.Name"), primary_key=True)
+    Case_No = db.Column(db.Integer(), db.ForeignKey(
+        "crime.Case_No"), primary_key=True)
+    Name = db.Column(db.String(128), db.ForeignKey(
+        "victim.Name"), primary_key=True)

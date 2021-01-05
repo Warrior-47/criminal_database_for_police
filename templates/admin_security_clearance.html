@@ -103,6 +103,16 @@
             </div>
             {{ form.submit_button(value='Update', class='btn btn-outline-dark mt-2 mx-1') }}
         </form>
+        <center>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+            <br>
+            <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+                <strong>{{message}}</strong>
+            </div>
+            {% endfor %}
+            {% endwith %}
+        </center>
         <hr>
         {% if flag %}
         <h3>Officer Information:</h3><br>

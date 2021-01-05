@@ -96,7 +96,6 @@ def Login():
 
     # Checking if the user is logged in or not. If so, redirecting to dashboard
     if current_user.is_authenticated:
-        print('asche')
         if current_user.get_id()[1]:
             return redirect(url_for('admin_dashboard'))
 
@@ -287,6 +286,11 @@ def insert_criminal():
 def query():
     search = SearchForm()
     insert_info = CriminalForm()
+
+    if not current_user.is_authenticated:
+        flash('Please Login first', 'danger')
+        return redirect(url_for('Login'))
+
     if search.validate_on_submit():
         query = search.query.data
         stmt = "Select Photo, Criminal_id, Name, Age, Nationality, NID_No, Phone_No, Address from criminal where Photo = '"+query+"'"
@@ -302,6 +306,11 @@ def query():
 @app.route('/dashboard/profile', methods=['GET', 'POST'])
 def display_profile():
     dp = ProfileForm()
+
+    if not current_user.is_authenticated:
+        flash('Please Login first', 'danger')
+        return redirect(url_for('Login'))
+
     if dp.validate_on_submit():
         Name = dp.fullname.data
         sex = dp.sex.data
@@ -340,6 +349,12 @@ def display_profile():
 
 @app.route('/validate', methods=['GET', 'POST'])
 def validate():
+    curr_user = current_user.get_id()
+    if not current_user.is_authenticated or not curr_user[1]:
+        if curr_user is None or curr_user[1]:
+            flash('Please Login first', 'danger')
+        return redirect(url_for('Login'))
+
     clr_form = SecurityForm()
     if clr_form.validate_on_submit():
         Officer_id = clr_form.Officer_id.data
@@ -350,9 +365,11 @@ def validate():
             security_obj.Clearance = Clearance
             db.session.merge(security_obj)
             db.session.commit()
-            stmt = 'Select * from police_officers'
-            crims = db.session.execute(stmt).fetchall()
+            flash(
+                f'Updated Clearance of {security_obj.Officer_id}', category='success')
             return redirect(url_for('validate'))
+        else:
+            flash('No Officer with that ID', category='danger')
 
     stmt1 = 'SELECT * from police_officers'
     stmt2 = 'select * from crime'
@@ -373,6 +390,12 @@ def validate():
 
 @app.route('/search/<keys1>', methods=['GET', 'POST'])
 def Search(keys1):
+    curr_user = current_user.get_id()
+    if not current_user.is_authenticated or not curr_user[1]:
+        if curr_user is None or curr_user[1]:
+            flash('Please Login first', 'danger')
+        return redirect(url_for('Login'))
+
     clr_form = SecurityForm()
     o1_obj = police_officers.query.filter_by(Officer_id=keys1).first()
     p1_obj = crime.query.filter_by(Case_No=keys1).first()
@@ -389,6 +412,12 @@ def Search(keys1):
 
 @app.route('/show1', methods=['GET', 'POST'])
 def Table():
+    curr_user = current_user.get_id()
+    if not current_user.is_authenticated or not curr_user[1]:
+        if curr_user is None or curr_user[1]:
+            flash('Please Login first', 'danger')
+        return redirect(url_for('Login'))
+
     tb_form = InformationForm()
     if tb_form.validate_on_submit():
         s = tb_form.T_name.data
@@ -415,6 +444,12 @@ def Table():
 
 @app.route('/Attr', methods=['GET', 'POST'])
 def Attr():
+    curr_user = current_user.get_id()
+    if not current_user.is_authenticated or not curr_user[1]:
+        if curr_user is None or curr_user[1]:
+            flash('Please Login first', 'danger')
+        return redirect(url_for('Login'))
+
     at_form = AttributeForm()
 
     return render_template('admin_create_table.html', c=1, form=at_form)
@@ -422,6 +457,12 @@ def Attr():
 
 @app.route('/CreateTable', methods=['GET', 'POST'])
 def CreateTable():
+    curr_user = current_user.get_id()
+    if not current_user.is_authenticated or not curr_user[1]:
+        if curr_user is None or curr_user[1]:
+            flash('Please Login first', 'danger')
+        return redirect(url_for('Login'))
+
     at_form = AttributeForm()
 
     num = at_form.Attr.data
@@ -462,6 +503,12 @@ def CreateTable():
 
 @app.route('/AddColumn', methods=['GET', 'POST'])
 def AddColumn():
+    curr_user = current_user.get_id()
+    if not current_user.is_authenticated or not curr_user[1]:
+        if curr_user is None or curr_user[1]:
+            flash('Please Login first', 'danger')
+        return redirect(url_for('Login'))
+
     all_table = db.engine.table_names()
     if request.method == 'POST':
         Tname = request.form.get('name')
@@ -498,6 +545,12 @@ def AddColumn():
 
 @app.route('/lookinto', methods=['GET', 'POST'])
 def lookinto():
+    curr_user = current_user.get_id()
+    if not current_user.is_authenticated or not curr_user[1]:
+        if curr_user is None or curr_user[1]:
+            flash('Please Login first', 'danger')
+        return redirect(url_for('Login'))
+
     # keeping all the username in usr
     names = db.session.query(Users.Username).all()
     usr = []
@@ -518,6 +571,11 @@ def lookinto():
 
 @app.route('/update/<key>', methods=['GET', 'POST'])
 def update(key):
+    curr_user = current_user.get_id()
+    if not current_user.is_authenticated or not curr_user[1]:
+        if curr_user is None or curr_user[1]:
+            flash('Please Login first', 'danger')
+        return redirect(url_for('Login'))
 
     dp = UpdateForm()
     if dp.validate_on_submit():
@@ -561,6 +619,10 @@ def update(key):
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
+    if not current_user.is_authenticated:
+        flash('Please Login first', 'danger')
+        return redirect(url_for('Login'))
+
     search_this = {
         'criminal': ['Criminal_id', 'Name', 'NID_No', 'Address', 'Motive'],
         'crime': ['Case_No'],
