@@ -15,7 +15,7 @@ cache.init_app(app, config={'CACHE_TYPE': 'simple'})
 app.secret_key = 'replace later'
 
 # Connecting to database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost/criminal_database'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/criminal_database'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_POOL_SIZE'] = 10
 app.config['SQLALCHEMY_MAX_OVERFLOW'] = 15
@@ -161,7 +161,10 @@ def admin_dashboard():
             return redirect(url_for('admin_dashboard'))
 
         user.Name = Name
-        user.Gender = sex[0]
+        if sex == '0':
+            user.Gender = 'M'
+        else:
+            user.Gender = 'F'
         user.Personal_email = personal_email
         user.Department_email = department_email
         user.Phone_No = phone_number
@@ -184,6 +187,13 @@ def admin_dashboard():
         "'"
     data = db.session.execute(stmt).fetchone()
     db.session.close()
+
+    if data.Gender == 'F':
+        dp.sex.default = 1
+        dp.process()
+    else:
+        dp.sex.default = 0
+        dp.process()
 
     # The html page to load when going to '127.0.0.1:port/dashboard'
     return render_template('admin-dashboard.html', form_dp=dp, data=data)
@@ -371,7 +381,10 @@ def display_profile():
             return redirect(url_for('display_profile'))
 
         user.Name = Name
-        user.Gender = sex[0]
+        if sex == '0':
+            user.Gender = 'M'
+        else:
+            user.Gender = 'F'
         user.Personal_email = personal_email
         user.Phone_No = phone_number
 
@@ -388,6 +401,12 @@ def display_profile():
         "'"
     data = db.session.execute(stmt).fetchone()
     db.session.close()
+    if data.Gender == 'F':
+        dp.sex.default = 1
+        dp.process()
+    else:
+        dp.sex.default = 0
+        dp.process()
 
     return render_template('dashboard-profile.html', form_dp=dp, data=data)
 
@@ -575,6 +594,9 @@ def AddColumn():
             if (column_name.lower()) in all_column:
                 flash("Column Exists. Try Again", 'danger')
                 return redirect(url_for('AddColumn'))
+            elif ' ' in column_name:
+                flash("Invalid Column Name. Try Again", 'danger')
+                return redirect(url_for('AddColumn'))
             else:
                 if column_type == "VARCHAR":
                     stmt = "ALTER TABLE " + Tname + " ADD " + column_name + \
@@ -662,6 +684,13 @@ def update(key):
         "'"
     data = db.session.execute(stmt).fetchone()
     db.session.close()
+
+    if data.Gender == 'F':
+        dp.sex.default = 'Female'
+        dp.process()
+    else:
+        dp.sex.default = 'Male'
+        dp.process()
 
     return render_template('admin_update.html', form_dp=dp, data=data, key=key)
 

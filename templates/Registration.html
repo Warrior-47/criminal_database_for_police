@@ -73,7 +73,14 @@
 <main class="form-signin">
     <h1 class="h3 mb-3 fw-normal">Account Information:</h1><br>
     {{ displayField(form.username,'Username',autocomplete='off') }}<br>
-    {{ displayField(form.rank,'Rank',autocomplete='off') }}<br>
+    {{ form.rank(class='form-select') }}
+    {% if form.rank.errors|length != 0 %}
+    <ul>
+        {% for error in form.rank.errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}<br>
     {{ displayField(form.station,'Station',autocomplete='off') }}<br>
     {{ displayField(form.officer_id,'Officer ID',autocomplete='off') }}<br>
     {{ displayField(form.password,'Password') }}<br>
