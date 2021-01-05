@@ -241,7 +241,7 @@ def show_yesterday_report():
     data = db.session.execute(stmt).fetchall()
     if data:
         return render_template('dashboard-datecrime.html', data=data, meta=data[0].keys())
-    
+
     flash('No Crime added Yesterday.', 'info')
     return redirect(url_for('dashboard'))
 
@@ -262,13 +262,20 @@ def showcriminals():
         crim = criminal.query.filter_by(Criminal_id=crim_id).first()
         if crim:
             photo = request.files['photo']
-            photo_name = secure_filename(photo.filename)
-            crim.Photo = photo_name
-            db.session.merge(crim)
-            db.session.commit()
-            db.session.close()
-            flash('Updated Successfully', 'success')
-            photo.save('static/criminal_images/'+photo_name)
+            filename = photo.filename
+            allowed_extentions = ['png', 'jpg']
+            file_ext = filename[len(filename) - filename[::-1].find('.'):]
+
+            if file_ext not in allowed_extentions:
+                flash("Image File Type not Supported.", category='danger')
+            else:
+                photo_name = secure_filename(photo.filename)
+                crim.Photo = photo_name
+                db.session.merge(crim)
+                db.session.commit()
+                db.session.close()
+                flash('Updated Successfully', 'success')
+                photo.save('static/criminal_images/'+photo_name)
         else:
             flash('No such Criminal', 'danger')
 

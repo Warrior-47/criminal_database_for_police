@@ -198,6 +198,14 @@ class CriminalForm(FlaskForm):
 
     submit_button = SubmitField('Submit')
 
+    def validate_photo(self, photo):
+        filename = photo.data.filename
+        allowed_extentions = ['png', 'jpg']
+        file_ext = filename[len(filename) - filename[::-1].find('.'):]
+        if file_ext not in allowed_extentions:
+            flash("Image File Type not Supported.", category='danger')
+            raise ValidationError("Image file type not supported.")
+
     def validate_nid_no(self, nid_no):
         if not nid_no.data.isnumeric():
             flash('Insert Failed', category='danger')
