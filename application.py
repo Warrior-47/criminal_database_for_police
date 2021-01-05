@@ -14,12 +14,13 @@ cache = Cache()
 cache.init_app(app, config={'CACHE_TYPE': 'simple'})
 
 # Connecting to database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost/criminal_database'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/criminal_database'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_POOL_SIZE'] = 10
 app.config['SQLALCHEMY_MAX_OVERFLOW'] = 15
 app.config['SQLALCHEMY_POOL_RECYCLE'] = 10
 app.config['SQLALCHEMY_ECHO'] = False
+app.config['SECRET_KEY'] = 'placeholder'
 
 db = SQLAlchemy(app)   # Creating the database object
 
@@ -555,6 +556,15 @@ def CreateTable():
                     stmt += name + ' ' + type + \
                         f'({length}),' if index < len(column_names) - \
                         1 else name + ' ' + type + f'({length})'
+
+                elif type == 'Double':
+                    if int(length)>=4:
+                        stmt += name + ' ' + type + \
+                            f'({length}),' if index < len(column_names) - \
+                            1 else name + ' ' + type + f'({length},4)'
+                    else:
+                        flash(" For Double, attribute length has to be greater or equal to 4", 'danger')
+                        return redirect(url_for('CreateTable'))
                 else:
                     stmt += name + ' ' + type + \
                         ',' if index < len(column_names) - \
@@ -603,6 +613,15 @@ def AddColumn():
                 if column_type == "VARCHAR":
                     stmt = "ALTER TABLE " + Tname + " ADD " + column_name + \
                         " " + column_type + "(" + column_len + ");"
+
+                elif column_type == 'Double':
+                    if int(column_len) >=4:
+                        stmt = "ALTER TABLE " + Tname + " ADD " + column_name + \
+                            " " + column_type + "(" + column_len + ",4);"
+                    else:
+                        flash(" For Double, attribute length has to be greater or equal to 4", 'danger')
+                        return redirect(url_for('AddColumn'))
+
                 else:
                     stmt = "ALTER TABLE " + Tname + " ADD " + column_name + \
                         " " + column_type + ";"
