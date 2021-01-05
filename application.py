@@ -1,9 +1,9 @@
-from datetime import datetime
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_login import LoginManager, login_user, current_user, logout_user
 from sqlalchemy import DDL, MetaData
 from werkzeug.utils import secure_filename
 from flask_caching import Cache
+from datetime import datetime, timedelta
 
 from wtform_fields import *
 from models import *
@@ -66,7 +66,8 @@ def index():
 
         hashed_pswd = pbkdf2_sha256.hash(password)   # Hashed Password
 
-        # Making Users and police_officers table object to insert into the database
+        # Making Users and police_officers table object to insert into the
+        # database
         user = Users(Username=username, Name=fullname, NID_No=nid_no,
                      Gender=sex[0], Pass=hashed_pswd, Phone_No=phone_number,
                      Personal_email=personal_email, Department_email=dept_email,
@@ -96,7 +97,6 @@ def Login():
 
     # Checking if the user is logged in or not. If so, redirecting to dashboard
     if current_user.is_authenticated:
-        print('asche')
         if current_user.get_id()[1]:
             return redirect(url_for('admin_dashboard'))
 
@@ -193,12 +193,50 @@ def admin_dashboard():
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
     # Checks if the user is logged in. If not, takes them back to login page.
+    search_form = SearchForm()
     if not current_user.is_authenticated:
         flash('Please Login first', 'danger')
         return redirect(url_for('Login'))
 
+    user_obj = Users.query.filter_by(Username=current_user.get_id()[0]).first()
+    clearance = user_obj.police.Clearance
+
+    stmt = 'Select c.Case_No, c.Crime_date, c.End_date, d.Description as Evidence_Decription, d.collection_date as Evidence_Collection_date, d.location as Evidence_Location, n.Name as Criminal_name, n.Address, p.Officer_id as Investigated_By, p.Rank from users u, crime c, investigate_by i, police_officers p, crime_evidence d, Committed_by cb, criminal n where u.username = p.username and p.Officer_id = i.Officer_id and c.Case_No = i.Case_No and n.Criminal_id = cb.Criminal_id and c.Case_No = cb.Case_No and d.Case_No = c.Case_No and c.Clearance >= ' + \
+        str(clearance)
+
+    data = db.session.execute(stmt).fetchall()
     # The html page to load when going to '127.0.0.1:port/dashboard'
-    return render_template('dashboard.html')
+    return render_template('dashboard.html', data=data, meta=data[0].keys())
+
+@app.route('/dashboard-crime-today',methods=['GET'])
+def show_today_report():
+
+    user_obj = Users.query.filter_by(Username=current_user.get_id()[0]).first()
+    clearance = user_obj.police.Clearance
+
+    stmt = 'Select c.Case_No, c.Crime_date, c.End_date, d.Description as Evidence_Decription, d.collection_date as Evidence_Collection_date, d.location as Evidence_Location, n.Name as Criminal_name, n.Address, p.Officer_id as Investigated_By, p.Rank from users u, crime c, investigate_by i, police_officers p, crime_evidence d, Committed_by cb, criminal n where u.username = p.username and p.Officer_id = i.Officer_id and c.Case_No = i.Case_No and n.Criminal_id = cb.Criminal_id and c.Case_No = cb.Case_No and d.Case_No = c.Case_No and c.Clearance >= ' + \
+        str(clearance) + ' and c.Crime_date = "'+str(datetime.utcnow().date())+'"'
+
+    data = db.session.execute(stmt).fetchall()
+    if data:
+        return render_template('dashboard-datecrime.html', data = data, meta=data[0].keys())
+    flash('No Crime added Today.', 'info')
+    return redirect(url_for('dashboard'))
+
+@app.route('/dashboard-crime-show_yesterday_report', methods=['GET'])
+def show_yesterday_report():
+
+    user_obj = Users.query.filter_by(Username=current_user.get_id()[0]).first()
+    clearance = user_obj.police.Clearance
+    date_yes = datetime.utcnow() - timedelta(days=1)
+    stmt = 'Select c.Case_No, c.Crime_date, c.End_date, d.Description as Evidence_Decription, d.collection_date as Evidence_Collection_date, d.location as Evidence_Location, n.Name as Criminal_name, n.Address, p.Officer_id as Investigated_By, p.Rank from users u, crime c, investigate_by i, police_officers p, crime_evidence d, Committed_by cb, criminal n where u.username = p.username and p.Officer_id = i.Officer_id and c.Case_No = i.Case_No and n.Criminal_id = cb.Criminal_id and c.Case_No = cb.Case_No and d.Case_No = c.Case_No and c.Clearance >= ' + \
+        str(clearance) + ' and c.Crime_date = "'+str(date_yes.date())+'"'
+
+    data = db.session.execute(stmt).fetchall()
+    if data:
+        return render_template('dashboard-datecrime.html', data = data, meta=data[0].keys())
+    flash('No Crime added Yesterday.', 'info')
+    return redirect(url_for('dashboard'))
 
 
 # login Method is called when '127.0.0.1:port/dashboard/criminals' this url is used.
@@ -279,6 +317,11 @@ def insert_criminal():
 def query():
     search = SearchForm()
     insert_info = CriminalForm()
+
+    if not current_user.is_authenticated:
+        flash('Please Login first', 'danger')
+        return redirect(url_for('Login'))
+
     if search.validate_on_submit():
         query = search.query.data
         stmt = "Select Photo, Criminal_id, Name, Age, Nationality, NID_No, Phone_No, Address from criminal where Photo = '"+query+"'"
@@ -294,6 +337,11 @@ def query():
 @app.route('/dashboard/profile', methods=['GET', 'POST'])
 def display_profile():
     dp = ProfileForm()
+
+    if not current_user.is_authenticated:
+        flash('Please Login first', 'danger')
+        return redirect(url_for('Login'))
+
     if dp.validate_on_submit():
         Name = dp.fullname.data
         sex = dp.sex.data
@@ -332,6 +380,12 @@ def display_profile():
 
 @app.route('/validate', methods=['GET', 'POST'])
 def validate():
+    curr_user = current_user.get_id()
+    if not current_user.is_authenticated or not curr_user[1]:
+        if curr_user is None or curr_user[1]:
+            flash('Please Login first', 'danger')
+        return redirect(url_for('Login'))
+
     clr_form = SecurityForm()
     if clr_form.validate_on_submit():
         Officer_id = clr_form.Officer_id.data
@@ -342,12 +396,14 @@ def validate():
             security_obj.Clearance = Clearance
             db.session.merge(security_obj)
             db.session.commit()
-            stmt = 'Select * from police_officers'
-            crims = db.session.execute(stmt).fetchall()
+            flash(
+                f'Updated Clearance of {security_obj.Officer_id}', category='success')
             return redirect(url_for('validate'))
+        else:
+            flash('No Officer with that ID', category='danger')
 
-    stmt1 = 'SELECT * from police_officers'
-    stmt2 = 'select * from crime'
+    stmt1 = 'SELECT * from police_officers order by Clearance'
+    stmt2 = 'select * from crime order by Clearance'
     pol = db.session.execute(stmt1).fetchall()
     crim = db.session.execute(stmt2).fetchall()
     Off = clr_form.Off.data
@@ -365,6 +421,12 @@ def validate():
 
 @app.route('/search/<keys1>', methods=['GET', 'POST'])
 def Search(keys1):
+    curr_user = current_user.get_id()
+    if not current_user.is_authenticated or not curr_user[1]:
+        if curr_user is None or curr_user[1]:
+            flash('Please Login first', 'danger')
+        return redirect(url_for('Login'))
+
     clr_form = SecurityForm()
     o1_obj = police_officers.query.filter_by(Officer_id=keys1).first()
     p1_obj = crime.query.filter_by(Case_No=keys1).first()
@@ -381,6 +443,12 @@ def Search(keys1):
 
 @app.route('/show1', methods=['GET', 'POST'])
 def Table():
+    curr_user = current_user.get_id()
+    if not current_user.is_authenticated or not curr_user[1]:
+        if curr_user is None or curr_user[1]:
+            flash('Please Login first', 'danger')
+        return redirect(url_for('Login'))
+
     tb_form = InformationForm()
     if tb_form.validate_on_submit():
         s = tb_form.T_name.data
@@ -407,6 +475,12 @@ def Table():
 
 @app.route('/Attr', methods=['GET', 'POST'])
 def Attr():
+    curr_user = current_user.get_id()
+    if not current_user.is_authenticated or not curr_user[1]:
+        if curr_user is None or curr_user[1]:
+            flash('Please Login first', 'danger')
+        return redirect(url_for('Login'))
+
     at_form = AttributeForm()
 
     return render_template('admin_create_table.html', c=1, form=at_form)
@@ -414,6 +488,12 @@ def Attr():
 
 @app.route('/CreateTable', methods=['GET', 'POST'])
 def CreateTable():
+    curr_user = current_user.get_id()
+    if not current_user.is_authenticated or not curr_user[1]:
+        if curr_user is None or curr_user[1]:
+            flash('Please Login first', 'danger')
+        return redirect(url_for('Login'))
+
     at_form = AttributeForm()
 
     num = at_form.Attr.data
@@ -426,6 +506,9 @@ def CreateTable():
         column_len = request.form.getlist('ta')
         if name and name.lower() in p:
             flash("Table Already Exists", 'danger')
+            return render_template('admin_create_table.html', c=1, form=at_form)
+        if name is not None and ' ' in name:
+            flash("Invalid Table Name", 'danger')
             return render_template('admin_create_table.html', c=1, form=at_form)
 
         if num is None:
@@ -454,6 +537,12 @@ def CreateTable():
 
 @app.route('/AddColumn', methods=['GET', 'POST'])
 def AddColumn():
+    curr_user = current_user.get_id()
+    if not current_user.is_authenticated or not curr_user[1]:
+        if curr_user is None or curr_user[1]:
+            flash('Please Login first', 'danger')
+        return redirect(url_for('Login'))
+
     all_table = db.engine.table_names()
     if request.method == 'POST':
         Tname = request.form.get('name')
@@ -473,12 +562,13 @@ def AddColumn():
                 flash("Column Exists. Try Again", 'danger')
                 return redirect(url_for('AddColumn'))
             else:
-                if column_type == "DATE":
+                if column_type == "VARCHAR":
                     stmt = "ALTER TABLE " + Tname + " ADD " + column_name + \
                         " " + column_type + "(" + column_len + ");"
                 else:
                     stmt = "ALTER TABLE " + Tname + " ADD " + column_name + \
                         " " + column_type + ";"
+
                 add_column = DDL(stmt)
                 db.engine.execute(add_column)
                 flash("Column Added.", 'success')
@@ -490,6 +580,12 @@ def AddColumn():
 
 @app.route('/lookinto', methods=['GET', 'POST'])
 def lookinto():
+    curr_user = current_user.get_id()
+    if not current_user.is_authenticated or not curr_user[1]:
+        if curr_user is None or curr_user[1]:
+            flash('Please Login first', 'danger')
+        return redirect(url_for('Login'))
+
     # keeping all the username in usr
     names = db.session.query(Users.Username).all()
     usr = []
@@ -510,6 +606,11 @@ def lookinto():
 
 @app.route('/update/<key>', methods=['GET', 'POST'])
 def update(key):
+    curr_user = current_user.get_id()
+    if not current_user.is_authenticated or not curr_user[1]:
+        if curr_user is None or curr_user[1]:
+            flash('Please Login first', 'danger')
+        return redirect(url_for('Login'))
 
     dp = UpdateForm()
     if dp.validate_on_submit():
@@ -549,6 +650,46 @@ def update(key):
     db.session.close()
 
     return render_template('admin_update.html', form_dp=dp, data=data, key=key)
+
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+    if not current_user.is_authenticated:
+        flash('Please Login first', 'danger')
+        return redirect(url_for('Login'))
+
+    search_this = {
+        'criminal': ['Criminal_id', 'Name', 'NID_No', 'Address', 'Motive'],
+        'crime': ['Case_No'],
+        'crime_evidence': ['Description', 'location'],
+        'murder': ['Murder_type'],
+        'drugs': ['Drug'],
+        'criminal_remarks': ['Remark']
+    }
+    if request.method == "POST":
+        searched_item = request.form['search']
+        res = []
+        for key in search_this.keys():
+            stmt = 'Select * from ' + key + ' where '
+            for data in search_this[key]:
+                temp = stmt
+                temp += data + ' like "%'+searched_item+'%"'
+                result = db.session.execute(temp).fetchall()
+                if result:
+                    for row in result:
+                        dic = [{key: value for key, value in row.items()}
+                               for row in result]
+                    for d in dic:
+                        res.append(d)
+        if res:
+            x = set()
+            for row in res:
+                y = {meta for meta in row.keys()}
+                x = x.union(y)
+            flash(f'Found {len(res)} Result(s)', 'success')
+            return render_template('dashboard.html', data=res, meta=x)
+    flash('Result Not Found', 'danger')
+    return redirect(url_for('dashboard'))
 
 
 @app.teardown_appcontext
