@@ -20,6 +20,7 @@ app.config['SQLALCHEMY_POOL_SIZE'] = 10
 app.config['SQLALCHEMY_MAX_OVERFLOW'] = 15
 app.config['SQLALCHEMY_POOL_RECYCLE'] = 10
 app.config['SQLALCHEMY_ECHO'] = False
+app.config['SECRET_KEY'] = 'placeholder'
 
 db = SQLAlchemy(app)   # Creating the database object
 
