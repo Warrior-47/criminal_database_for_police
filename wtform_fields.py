@@ -8,7 +8,7 @@ from models import Users, police_officers, criminal
 
 def validate_credentials(form, field):
     """
-    This is checking the login info given by using, and checking
+    This is checking the login info given by user, and checking
     if the database contains the user and if the password provided
     is the correct password.
 
@@ -24,7 +24,7 @@ def validate_credentials(form, field):
 
 class ProfileForm(FlaskForm):
 
-    choice = [(0,'Male'), (1,'Female')]
+    choice = [(0, 'Male'), (1, 'Female')]
 
     fullname = StringField('fullname_label', validators=[
                            Length(max=128, message='Name is too long')])
@@ -65,7 +65,8 @@ class RegistrationForm(FlaskForm):
 
     """
     sex_choice = ['Sex:', 'Male', 'Female']
-    rank_choice = ['Rank:', 'Inspector General of Police','Additional Inspector General of Police','Deputy Inspector General of Police','Additional Deputy Inspector General of Police','Superintendent of Police','Additional Superintendent of Police','Senior Assistant Superintendent of Police','Assistant Superintendent of Police','Inspector','Sub Inspector','Sergent','Assisteant Sub Inspector','Nayek','Constable']
+    rank_choice = ['Rank:', 'Inspector General of Police', 'Additional Inspector General of Police', 'Deputy Inspector General of Police', 'Additional Deputy Inspector General of Police', 'Superintendent of Police',
+                   'Additional Superintendent of Police', 'Senior Assistant Superintendent of Police', 'Assistant Superintendent of Police', 'Inspector', 'Sub Inspector', 'Sergent', 'Assisteant Sub Inspector', 'Nayek', 'Constable']
 
     fullname = StringField('fullname_label', validators=[
                            InputRequired(), Length(max=128, message='Name is too long')])
@@ -202,19 +203,17 @@ class CriminalForm(FlaskForm):
         filename = photo.data.filename
         allowed_extentions = ['png', 'jpg']
         file_ext = filename[len(filename) - filename[::-1].find('.'):]
-        if file_ext not in allowed_extentions:
+        if filename != '' and file_ext not in allowed_extentions:
             flash("Image File Type not Supported.", category='danger')
             raise ValidationError("Image file type not supported.")
 
     def validate_nid_no(self, nid_no):
         if not nid_no.data.isnumeric():
-            flash('Insert Failed', category='danger')
             raise ValidationError("NID number is numeric only.")
 
         user_obj = criminal.query.filter_by(
             NID_No=nid_no.data).first()
         if user_obj:
-            flash('Insert Failed', category='danger')
             raise ValidationError("NID Already in Use.")
 
 

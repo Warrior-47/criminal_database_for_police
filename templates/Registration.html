@@ -58,11 +58,11 @@
         {{ displayField(form.department_email,'Department Email', autocomplete='off') }} <br>
         {{ form.sex(class='form-select') }}
         {% if form.sex.errors|length != 0 %}
-        <ul>
-            {% for error in form.sex.errors %}
-            <li>{{ error }}</li>
-            {% endfor %}
-        </ul>
+        {% for error in form.sex.errors %}
+        <div class="alert alert-danger mt-2">
+            {{ error }}
+        </div>
+        {% endfor %}
         {% endif %}
         <p></p>
 
@@ -75,11 +75,11 @@
     {{ displayField(form.username,'Username',autocomplete='off') }}<br>
     {{ form.rank(class='form-select') }}
     {% if form.rank.errors|length != 0 %}
-    <ul>
-        {% for error in form.rank.errors %}
-        <li>{{ error }}</li>
-        {% endfor %}
-    </ul>
+    {% for error in form.rank.errors %}
+    <div class="alert alert-danger mt-2">
+        {{ error }}
+    </div>
+    {% endfor %}
     {% endif %}<br>
     {{ displayField(form.station,'Station',autocomplete='off') }}<br>
     {{ displayField(form.officer_id,'Officer ID',autocomplete='off') }}<br>
