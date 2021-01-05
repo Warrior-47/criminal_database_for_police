@@ -24,7 +24,7 @@ def validate_credentials(form, field):
 
 class ProfileForm(FlaskForm):
 
-    choice = ['Male', 'Female']
+    choice = [(0,'Male'), (1,'Female')]
 
     fullname = StringField('fullname_label', validators=[
                            Length(max=128, message='Name is too long')])
@@ -64,7 +64,8 @@ class RegistrationForm(FlaskForm):
     See the Registration_Page.html file to see how they are connected
 
     """
-    choice = ['Sex:', 'Male', 'Female']
+    sex_choice = ['Sex:', 'Male', 'Female']
+    rank_choice = ['Rank:', 'Inspector General of Police','Additional Inspector General of Police','Deputy Inspector General of Police','Additional Deputy Inspector General of Police','Superintendent of Police','Additional Superintendent of Police','Senior Assistant Superintendent of Police','Assistant Superintendent of Police','Inspector','Sub Inspector','Sergent','Assisteant Sub Inspector','Nayek','Constable']
 
     fullname = StringField('fullname_label', validators=[
                            InputRequired(), Length(max=128, message='Name is too long')])
@@ -81,7 +82,7 @@ class RegistrationForm(FlaskForm):
     department_email = StringField('department_email_label', validators=[
                                    InputRequired(), Email('Not a Valid Email Address.'), Length(max=128, message='Email is too long')])
 
-    sex = SelectField(u'Choose', choices=choice)
+    sex = SelectField(u'Choose', choices=sex_choice)
 
     phone_number = StringField('phone_number_label', validators=[
                                InputRequired(), Length(max=11, message='No need for "+88". Phone number can only be 11 characters long.')])
@@ -92,8 +93,7 @@ class RegistrationForm(FlaskForm):
     username = StringField('username_label', validators=[
                            InputRequired(), Length(max=128, message='Username too long.')])
 
-    rank = StringField('rank_label', validators=[
-                       InputRequired(), Length(max=32, message='Invalid Rank.')])
+    rank = SelectField(u'Choose', choices=rank_choice)
 
     station = StringField('station_label', validators=[
                           InputRequired(), Length(max=32, message='Invalid Station.')])
@@ -133,10 +133,6 @@ class RegistrationForm(FlaskForm):
         if user_obj:
             raise ValidationError("Account Already Registered.")
 
-    def validate_sex(self, sex):
-        if sex.data == 'Sex:':
-            raise ValidationError("You must choose")
-
     def validate_username(self, username):
         """
         This is validating if the username already exists in the database. If so, raises an ValidationError
@@ -149,6 +145,10 @@ class RegistrationForm(FlaskForm):
 
     def validate_sex(self, sex):
         if sex.data == 'Sex:':
+            raise ValidationError("You must choose")
+
+    def validate_rank(self, rank):
+        if rank.data == 'Rank:':
             raise ValidationError("You must choose")
 
 
