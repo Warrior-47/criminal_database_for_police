@@ -45,6 +45,13 @@ def load_user(username):
 # index Method is called when '127.0.0.1:port/' this url is used.
 @app.route("/", methods=['GET', 'POST'])
 def index():
+
+    if current_user.is_authenticated:
+        if current_user.get_id()[1]:
+            return redirect(url_for('admin_dashboard'))
+
+        return redirect(url_for('dashboard'))
+
     # The form used to make the registration page.
     reg_form = RegistrationForm()
 
@@ -713,14 +720,29 @@ def search():
         'criminal_remarks': ['Remark']
     }
     if request.method == "POST":
+        user_obj = Users.query.filter_by(Username=current_user.get_id()[0]).first()
+        clearance = user_obj.police.Clearance
         searched_item = request.form['search']
         res = []
         for key in search_this.keys():
-            stmt = 'Select * from ' + key + ' where '
-            for data in search_this[key]:
-                temp = stmt
-                temp += data + ' like "%'+searched_item+'%"'
-                result = db.session.execute(temp).fetchall()
+            stmt = ''
+            if key != 'crime_evidence':
+                stmt = 'Select * from ' + key + ' where '
+                for data in search_this[key]:
+                    temp = stmt
+                    temp += data + ' like "%'+searched_item+'%"'
+                    if key == 'crime':
+                        temp += ' and Clearance >= '+str(clearance)+';'
+                    result = db.session.execute(temp).fetchall()
+                    if result:
+                        for row in result:
+                            dic = [{key: value for key, value in row.items()}
+                                   for row in result]
+                        for d in dic:
+                            res.append(d)
+            else:
+                stmt = 'Select e.Case_No, e.Collection_date, e.Description, e.location from crime c, crime_evidence e where c.Case_No = e.Case_No and c.Clearance >= '+str(clearance)+' and (e.Description like "%'+searched_item+'%" OR e.location like "%'+searched_item+'%");'
+                result = db.session.execute(stmt).fetchall()
                 if result:
                     for row in result:
                         dic = [{key: value for key, value in row.items()}
