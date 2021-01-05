@@ -241,6 +241,7 @@ def show_yesterday_report():
     data = db.session.execute(stmt).fetchall()
     if data:
         return render_template('dashboard-datecrime.html', data=data, meta=data[0].keys())
+    
     flash('No Crime added Yesterday.', 'info')
     return redirect(url_for('dashboard'))
 
@@ -408,8 +409,8 @@ def validate():
         else:
             flash('No Officer with that ID', category='danger')
 
-    stmt1 = 'SELECT * from police_officers'
-    stmt2 = 'select * from crime'
+    stmt1 = 'SELECT * from police_officers order by Clearance'
+    stmt2 = 'select * from crime order by Clearance'
     pol = db.session.execute(stmt1).fetchall()
     crim = db.session.execute(stmt2).fetchall()
     Off = clr_form.Off.data
@@ -513,6 +514,9 @@ def CreateTable():
         if name and name.lower() in p:
             flash("Table Already Exists", 'danger')
             return render_template('admin_create_table.html', c=1, form=at_form)
+        if name is not None and ' ' in name:
+            flash("Invalid Table Name", 'danger')
+            return render_template('admin_create_table.html', c=1, form=at_form)
 
         if num is None:
             """table create"""
@@ -565,12 +569,13 @@ def AddColumn():
                 flash("Column Exists. Try Again", 'danger')
                 return redirect(url_for('AddColumn'))
             else:
-                if column_type == "DATE":
+                if column_type == "VARCHAR":
                     stmt = "ALTER TABLE " + Tname + " ADD " + column_name + \
                         " " + column_type + "(" + column_len + ");"
                 else:
                     stmt = "ALTER TABLE " + Tname + " ADD " + column_name + \
                         " " + column_type + ";"
+
                 add_column = DDL(stmt)
                 db.engine.execute(add_column)
                 flash("Column Added.", 'success')
