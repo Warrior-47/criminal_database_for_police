@@ -12,10 +12,9 @@ import pickle
 app = Flask(__name__)  # Creating the server app
 cache = Cache()
 cache.init_app(app, config={'CACHE_TYPE': 'simple'})
-app.secret_key = 'replace later'
 
 # Connecting to database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/criminal_database'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost/criminal_database'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_POOL_SIZE'] = 10
 app.config['SQLALCHEMY_MAX_OVERFLOW'] = 15
@@ -332,6 +331,9 @@ def insert_criminal():
             db.session.commit()
             db.session.close()
         flash('Insert Successful', 'success')
+
+    else:
+        flash('Insert Failed', category='danger')
 
     return redirect(url_for('showcriminals'))
 
