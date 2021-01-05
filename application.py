@@ -3,6 +3,7 @@ from flask_login import LoginManager, login_user, current_user, logout_user
 from sqlalchemy import DDL, MetaData
 from werkzeug.utils import secure_filename
 from flask_caching import Cache
+from datetime import datetime, timedelta
 
 from wtform_fields import *
 from models import *
@@ -14,7 +15,7 @@ cache.init_app(app, config={'CACHE_TYPE': 'simple'})
 app.secret_key = 'replace later'
 
 # Connecting to database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost/criminal_database'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/criminal_database'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_POOL_SIZE'] = 10
 app.config['SQLALCHEMY_MAX_OVERFLOW'] = 15
@@ -206,6 +207,36 @@ def dashboard():
     data = db.session.execute(stmt).fetchall()
     # The html page to load when going to '127.0.0.1:port/dashboard'
     return render_template('dashboard.html', data=data, meta=data[0].keys())
+
+@app.route('/dashboard-crime-today',methods=['GET'])
+def show_today_report():
+
+    user_obj = Users.query.filter_by(Username=current_user.get_id()[0]).first()
+    clearance = user_obj.police.Clearance
+
+    stmt = 'Select c.Case_No, c.Crime_date, c.End_date, d.Description as Evidence_Decription, d.collection_date as Evidence_Collection_date, d.location as Evidence_Location, n.Name as Criminal_name, n.Address, p.Officer_id as Investigated_By, p.Rank from users u, crime c, investigate_by i, police_officers p, crime_evidence d, Committed_by cb, criminal n where u.username = p.username and p.Officer_id = i.Officer_id and c.Case_No = i.Case_No and n.Criminal_id = cb.Criminal_id and c.Case_No = cb.Case_No and d.Case_No = c.Case_No and c.Clearance >= ' + \
+        str(clearance) + ' and c.Crime_date = "'+str(datetime.utcnow().date())+'"'
+
+    data = db.session.execute(stmt).fetchall()
+    if data:
+        return render_template('dashboard-datecrime.html', data = data, meta=data[0].keys())
+    flash('No Crime added Today.', 'info')
+    return redirect(url_for('dashboard'))
+
+@app.route('/dashboard-crime-show_yesterday_report', methods=['GET'])
+def show_yesterday_report():
+
+    user_obj = Users.query.filter_by(Username=current_user.get_id()[0]).first()
+    clearance = user_obj.police.Clearance
+    date_yes = datetime.utcnow() - timedelta(days=1)
+    stmt = 'Select c.Case_No, c.Crime_date, c.End_date, d.Description as Evidence_Decription, d.collection_date as Evidence_Collection_date, d.location as Evidence_Location, n.Name as Criminal_name, n.Address, p.Officer_id as Investigated_By, p.Rank from users u, crime c, investigate_by i, police_officers p, crime_evidence d, Committed_by cb, criminal n where u.username = p.username and p.Officer_id = i.Officer_id and c.Case_No = i.Case_No and n.Criminal_id = cb.Criminal_id and c.Case_No = cb.Case_No and d.Case_No = c.Case_No and c.Clearance >= ' + \
+        str(clearance) + ' and c.Crime_date = "'+str(date_yes.date())+'"'
+
+    data = db.session.execute(stmt).fetchall()
+    if data:
+        return render_template('dashboard-datecrime.html', data = data, meta=data[0].keys())
+    flash('No Crime added Yesterday.', 'info')
+    return redirect(url_for('dashboard'))
 
 
 # login Method is called when '127.0.0.1:port/dashboard/criminals' this url is used.
