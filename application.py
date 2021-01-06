@@ -14,7 +14,7 @@ cache = Cache()
 cache.init_app(app, config={'CACHE_TYPE': 'simple'})
 
 # Connecting to database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/criminal_database'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:root@localhost/criminal_database'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.config['SQLALCHEMY_POOL_SIZE'] = 10
 app.config['SQLALCHEMY_MAX_OVERFLOW'] = 15
@@ -22,7 +22,8 @@ app.config['SQLALCHEMY_POOL_RECYCLE'] = 10
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['SECRET_KEY'] = 'placeholder'
 
-db = SQLAlchemy(app)   # Creating the database object
+# Creating the database object
+db = SQLAlchemy(app, session_options={"autoflush": False})
 
 log_in = LoginManager(app)   # Configuring flask-login
 log_in.init_app(app)
@@ -172,6 +173,23 @@ def admin_dashboard():
             user.Gender = 'M'
         else:
             user.Gender = 'F'
+
+        check_pmail = Users.query.filter_by(
+            Personal_email=personal_email).first()
+        check_dmail = Users.query.filter_by(
+            Department_email=department_email).first()
+        check_NID = Users.query.filter_by(NID_No=nid).first()
+
+        if check_pmail and check_pmail != user:
+            flash('Personal Email Already in Use', 'danger')
+            return redirect(url_for('admin_dashboard'))
+        elif check_dmail and check_dmail != user:
+            flash('Department Email Already in Use', 'danger')
+            return redirect(url_for('admin_dashboard'))
+        elif check_NID and check_NID != user:
+            flash('NID Already Registered', 'danger')
+            return redirect(url_for('admin_dashboard'))
+
         user.Personal_email = personal_email
         user.Department_email = department_email
         user.Phone_No = phone_number
@@ -395,6 +413,12 @@ def display_profile():
             user.Gender = 'M'
         else:
             user.Gender = 'F'
+
+        check = Users.query.filter_by(Personal_email=personal_email).first()
+        if check and check != user:
+            flash("Email Already in Use", "danger")
+            return redirect(url_for('display_profile'))
+
         user.Personal_email = personal_email
         user.Phone_No = phone_number
 
@@ -674,6 +698,30 @@ def update(key):
         user = Users.query.filter_by(Username=key).first()
         pb = police_officers.query.filter_by(Username=key).first()
 
+        check_pmail = Users.query.filter_by(
+            Personal_email=personal_email).first()
+
+        check_dmail = Users.query.filter_by(
+            Department_email=department_email).first()
+
+        check_NID = Users.query.filter_by(NID_No=nid).first()
+
+        check_ID = police_officers.query.filter_by(
+            Officer_id=officer_id).first()
+
+        if check_pmail and check_pmail != user:
+            flash('Personal Email Already in Use', 'danger')
+            return redirect(url_for('update', key=key))
+        elif check_dmail and check_dmail != user:
+            flash('Department Email Already in Use', 'danger')
+            return redirect(url_for('update', key=key))
+        elif check_NID and check_NID != user:
+            flash('NID Already Registered', 'danger')
+            return redirect(url_for('update', key=key))
+        elif check_ID and check_ID != pb:
+            flash('Officer ID Already Registered', 'danger')
+            return redirect(url_for('update', key=key))
+
         user.Name = Name
         user.Gender = sex[0]
         user.Personal_email = personal_email
@@ -720,7 +768,8 @@ def search():
         'criminal_remarks': ['Remark']
     }
     if request.method == "POST":
-        user_obj = Users.query.filter_by(Username=current_user.get_id()[0]).first()
+        user_obj = Users.query.filter_by(
+            Username=current_user.get_id()[0]).first()
         clearance = user_obj.police.Clearance
         searched_item = request.form['search']
         res = []
@@ -741,7 +790,9 @@ def search():
                         for d in dic:
                             res.append(d)
             else:
-                stmt = 'Select e.Case_No, e.Collection_date, e.Description, e.location from crime c, crime_evidence e where c.Case_No = e.Case_No and c.Clearance >= '+str(clearance)+' and (e.Description like "%'+searched_item+'%" OR e.location like "%'+searched_item+'%");'
+                stmt = 'Select e.Case_No, e.Collection_date, e.Description, e.location from crime c, crime_evidence e where c.Case_No = e.Case_No and c.Clearance >= ' + \
+                    str(clearance)+' and (e.Description like "%'+searched_item + \
+                    '%" OR e.location like "%'+searched_item+'%");'
                 result = db.session.execute(stmt).fetchall()
                 if result:
                     for row in result:
